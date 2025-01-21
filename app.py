@@ -8,6 +8,7 @@ def generate_urls(start_year, end_year, sensor_type, sensor_id):
                 urls.append(url)
     
     return urls
+    # * Beispiel-URLs:
     # https://archive.sensor.community/2023-01-02/2023-01-02_bme280_sensor_113.csv
 
 start_year = int(input("Geben Sie den Startjahr ein: "))
