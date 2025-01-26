@@ -14,7 +14,25 @@ In diesem Projekt prüfen den Feinstaub in Deutschland.
 
 ***
 
+## Create venv
+
+```sh
+python -m venv ./.venv
+```
+
+## Activate venv
+
+```sh
+source ./.venv/bin/activate 
+```
+
+## Install requirements
+
+```bash
+pip install -r requirements.txt
+```
+
 ## Requirements:
-- 
+- request
 -
 -
