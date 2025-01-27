@@ -1,11 +1,12 @@
 import datetime
 import requests # Ist kein Fehler.
 import csv
+import matplotlib.pyplot as plt
 
 from pathlib import Path
-
-# https://archive.sensor.community/2024-01-01/2024-01-01_bme280_sensor_113.csv
-# https://archive.sensor.community/2023/2023-01-01/2023-01-01_bme280_sensor_113.csv.gz
+    
+# * Beispiel-URLs:
+# https://archive.sensor.community/2024-01-02/2024-01-02_bme280_sensor_113.csv
 
 def generate_urls(start_year: int, end_year: int, sensor_type: str, sensor_id: str) -> list[tuple[str, str]]:
     base_url = "http://archive.sensor.community"
@@ -26,8 +27,6 @@ def generate_urls(start_year: int, end_year: int, sensor_type: str, sensor_id: s
     
     return urls
 
-    # * Beispiel-URLs:
-    # https://archive.sensor.community/2023-01-02/2023-01-02_bme280_sensor_113.csv
 
 def get_date_range_year(year: int) -> list[datetime.datetime]:
     """
@@ -120,10 +119,35 @@ def calculate_temperature_difference(data: list[tuple[float, datetime.datetime]]
 
     return temperature_difference  
 
+def draw_graph(analysed_data):
+    dates = [data[0] for data in analysed_data]
+    avg_temps = [data[1] for data in analysed_data]
+    high_temps = [data[2] for data in analysed_data]
+    low_temps = [data[3] for data in analysed_data]
+    temp_diffs = [data[4] for data in analysed_data]
+
+    plt.figure(figsize=(10, 6))
+
+    plt.plot(dates, avg_temps, label='Ø', color='blue')
+    plt.plot(dates, high_temps, label='max', color='red')
+    plt.plot(dates, low_temps, label='min', color='green')
+    plt.plot(dates, temp_diffs, label='diff', color='orange')
+
+    plt.xlabel('Datum')
+    plt.ylabel('Temperatur (°C)')
+    plt.title('Temperaturanalyse')
+    plt.legend()
+    plt.grid(True)
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+
+    plt.savefig('temperaturanalyse.png')
+
+    
 
 start_year = int(input("Geben Sie den Startjahr ein: ").strip() or "2024")
 end_year = int(input("Geben Sie den Endjahr ein: ").strip() or "2024")
-sensor_type = input("Geben Sie den Sensor-Typ ein: ").strip() or "dht22"
+sensor_type = "dht22"
 sensor_id = input("Geben Sie die Sensor-ID ein: ").strip() or "63047"
 
 if start_year > end_year:
@@ -134,7 +158,7 @@ if start_year < 2024:
     print("Das Startjahr darf nicht kleiner als 2024 sein.")
     exit(1)
 
-
+# [0] = Datum, [1] = Durchschnittstemperatur, [2] = Höchsttemperatur, [3] = Tiefstemperatur, [4] = Temperaturdifferenz
 analysed_data: list[tuple[datetime.datetime, float, float, float, float]] = []
 
 urls = generate_urls(start_year, end_year, sensor_type, sensor_id)
@@ -153,7 +177,8 @@ for url in urls:
     
     analysed_data.append((date, avarage, max, min, diff))
     
-print(analysed_data)
+# print(analysed_data) ##* Eine CLI-Ansicht der Daten
+draw_graph(analysed_data)
 
 
 #NOTE: Das funktioniert nur ab dem Jahr 2024.

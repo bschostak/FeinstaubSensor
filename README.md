@@ -34,5 +34,4 @@ pip install -r requirements.txt
 
 ## Requirements:
 - request
--
--
+- matplotlib

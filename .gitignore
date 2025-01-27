@@ -173,3 +173,4 @@ cython_debug/
 myenv/
 .mypy_cache/
 sensor_data/*.csv
+temperaturanalyse.png
