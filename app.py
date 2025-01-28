@@ -1,10 +1,11 @@
 import datetime
-import requests # Ist kein Fehler.
+import requests  # Ist kein Fehler.
 import csv
 import matplotlib.pyplot as plt
 
 from pathlib import Path
-    
+
+
 # * Beispiel-URLs:
 # https://archive.sensor.community/2024-01-02/2024-01-02_bme280_sensor_113.csv
 
@@ -24,7 +25,6 @@ def generate_urls(start_year: int, end_year: int, sensor_type: str, sensor_id: s
             url = f"{base_url}/{date.year}-{date.month:02d}-{date.day:02d}/{file_name}"
             urls.append((url, file_name))
 
-    
     return urls
 
 
@@ -49,8 +49,8 @@ def get_date_range(from_time: datetime.datetime, to_time: datetime.datetime) -> 
     date_difference = to_time - from_time
     days_difference = date_difference.days
     total_days = int(days_difference)
-    
-    for i in range(total_days+1):
+
+    for i in range(total_days + 1):
         """
         Addiert die Anzahl der Tage zum Startdatum und fügt das Ergebnis der Liste hinzu.
         Beim addieren wird bereits beachtet, dass auch der Monat und das Jahr korrekt angepasst werden.
@@ -58,6 +58,7 @@ def get_date_range(from_time: datetime.datetime, to_time: datetime.datetime) -> 
         date_list.append(from_time + datetime.timedelta(days=i))
 
     return date_list
+
 
 def download_file(url: str, file_name: str) -> str | None:
     if Path(file_name).exists():
@@ -73,20 +74,22 @@ def download_file(url: str, file_name: str) -> str | None:
         print(f"Failed to download file {file_name}. Status code: {response.status_code}")
         return None
 
+
 def open_csv_file(file_name: str) -> list[tuple[float, datetime.datetime]]:
     with open(file_name, "r") as file:
         reader = csv.reader(file, dialect='excel')
         data = list(reader)
     data.pop(0)
-    
+
     extracted_data: list[tuple[float, datetime.datetime]] = []
     for row in data:
         separated = row[0].split(";")
         timestamp = datetime.datetime.strptime(separated[5], "%Y-%m-%dT%H:%M:%S")
         temperature = float(separated[6])
         extracted_data.append((temperature, timestamp))
-    
+
     return extracted_data
+
 
 def calculate_avarage_temperature(data: list[tuple[float, datetime.datetime]]) -> float:
     total_temperature = 0.0
@@ -96,14 +99,16 @@ def calculate_avarage_temperature(data: list[tuple[float, datetime.datetime]]) -
 
     return total_temperature / len(data)
 
+
 def calculate_max_temperature(data: list[tuple[float, datetime.datetime]]) -> float:
     highest_temperature = data[0][0]
 
     for row in data:
         if row[0] > highest_temperature:
             highest_temperature = row[0]
-        
+
     return highest_temperature
+
 
 def calculate_min_temperature(data: list[tuple[float, datetime.datetime]]) -> float:
     lowest_temperature = data[0][0]
@@ -114,10 +119,12 @@ def calculate_min_temperature(data: list[tuple[float, datetime.datetime]]) -> fl
 
     return lowest_temperature
 
+
 def calculate_temperature_difference(data: list[tuple[float, datetime.datetime]]) -> float:
     temperature_difference = calculate_max_temperature(data) - calculate_min_temperature(data)
 
-    return temperature_difference  
+    return temperature_difference
+
 
 def draw_graph(analysed_data):
     dates = [data[0] for data in analysed_data]
@@ -143,7 +150,6 @@ def draw_graph(analysed_data):
 
     plt.savefig('temperaturanalyse.png')
 
-    
 
 start_year = int(input("Geben Sie den Startjahr ein: ").strip() or "2024")
 end_year = int(input("Geben Sie den Endjahr ein: ").strip() or "2024")
@@ -167,23 +173,22 @@ for url in urls:
     downloaded_file_name = download_file(url=url[0], file_name=f"./sensor_data/{url[1]}")
     if downloaded_file_name is None:
         continue
-    
+
     csv_file = open_csv_file(downloaded_file_name)
     avarage = calculate_avarage_temperature(csv_file)
     max = calculate_max_temperature(csv_file)
     min = calculate_min_temperature(csv_file)
     diff = calculate_temperature_difference(csv_file)
     date = csv_file[0][1]
-    
+
     analysed_data.append((date, avarage, max, min, diff))
-    
+
 # print(analysed_data) ##* Eine CLI-Ansicht der Daten
 draw_graph(analysed_data)
 
-
 #NOTE: Das funktioniert nur ab dem Jahr 2024.
 
-#TODO: Durchschnittstemperatur, Höchsttemperatur, Tiefstemperatur, Temperaturdifferenz
+#TODO: Durchschnittstemperatur, Höchsttemperatur, Tieftemperatur, Temperaturdifferenz
 #TODO: Unterstützung für den alten Typ der Sensoren hinzufügen
 
 #* Sensor: id: 63047, dht22
