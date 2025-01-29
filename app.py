@@ -2,28 +2,41 @@ import datetime
 import requests  # Ist kein Fehler.
 import csv
 import matplotlib.pyplot as plt
-
+import gzip
 from pathlib import Path
 
 
 # * Beispiel-URLs:
-# https://archive.sensor.community/2024-01-02/2024-01-02_bme280_sensor_113.csv
+# new: https://archive.sensor.community/2024-01-02/2024-01-02_dht22_sensor_113.csv
+# old: https://archive.sensor.community/2023/2023-01-01/2023-01-02_dht22_sensor_113.csv.gz
+
+base_url = "http://archive.sensor.community/"
+
+def parse_file_name(date: datetime.datetime, sensor_type: str, sensor_id: str) -> str:
+    if date.year >= 2024:
+        return f"{date.year}-{date.month:02d}-{date.day:02d}_{sensor_type}_sensor_{sensor_id}.csv"
+    else:
+        return f"{date.year}-{date.month:02d}-{date.day:02d}_{sensor_type}_sensor_{sensor_id}.csv.gz"
+
+def parse_url(date: datetime.datetime, sensor_type: str, sensor_id: str) -> str:
+    if date.year >= 2024:
+        return f"{base_url}/{date.year}-{date.month:02d}-{date.day:02d}/{parse_file_name(date, sensor_type, sensor_id)}"
+    else:
+        return f"{base_url}/{date.year}/{date.year}-{date.month:02d}-{date.day:02d}/{parse_file_name(date, sensor_type, sensor_id)}"
 
 def generate_urls(start_year: int, end_year: int, sensor_type: str, sensor_id: str) -> list[tuple[str, str]]:
-    base_url = "http://archive.sensor.community"
-
     urls: list[tuple[str, str]] = []
 
     #* So sieht tulpe aus:
     # list:
-    # [(url, file_name)
-    # (url, file_name)]
+    # [(sensor_url, file_name)
+    # (sensor_url, file_name)]
 
     for year in range(start_year, end_year + 1):
         for date in get_date_range_year(year):
-            file_name = f"{date.year}-{date.month:02d}-{date.day:02d}_{sensor_type}_sensor_{sensor_id}.csv"
-            url = f"{base_url}/{date.year}-{date.month:02d}-{date.day:02d}/{file_name}"
-            urls.append((url, file_name))
+            file_name = parse_file_name(date, sensor_type, sensor_id)
+            sensor_url = parse_url(date, sensor_type, sensor_id)
+            urls.append((sensor_url, file_name))
 
     return urls
 
@@ -74,6 +87,9 @@ def download_file(url: str, file_name: str) -> str | None:
         print(f"Failed to download file {file_name}. Status code: {response.status_code}")
         return None
 
+#TODO: Zu beenden
+def extract_archive(file_name: str) -> None:
+    pass
 
 def open_csv_file(file_name: str) -> list[tuple[float, datetime.datetime]]:
     with open(file_name, "r") as file:
@@ -126,7 +142,7 @@ def calculate_temperature_difference(data: list[tuple[float, datetime.datetime]]
     return temperature_difference
 
 
-def draw_graph(analysed_data):
+def draw_graph(analysed_data: list[tuple[datetime.datetime, float, float, float, float]]):
     dates = [data[0] for data in analysed_data]
     avg_temps = [data[1] for data in analysed_data]
     high_temps = [data[2] for data in analysed_data]
@@ -173,6 +189,9 @@ for url in urls:
     downloaded_file_name = download_file(url=url[0], file_name=f"./sensor_data/{url[1]}")
     if downloaded_file_name is None:
         continue
+    if downloaded_file_name.endswith(".gz"):
+        extract_gz(downloaded_file_name)
+        downloaded_file_name = downloaded_file_name.replace(".gz", "")
 
     csv_file = open_csv_file(downloaded_file_name)
     avarage = calculate_avarage_temperature(csv_file)
@@ -188,7 +207,6 @@ draw_graph(analysed_data)
 
 # ! Das funktioniert nur ab dem Jahr 2024.
 
-#TODO: Durchschnittstemperatur, Höchsttemperatur, Tieftemperatur, Temperaturdifferenz
 #TODO: Unterstützung für den alten Typ der Sensoren hinzufügen
 
 # * Sensor: id: 63047, dht22
