@@ -186,9 +186,9 @@ for url in urls:
 # print(analysed_data) ##* Eine CLI-Ansicht der Daten
 draw_graph(analysed_data)
 
-#NOTE: Das funktioniert nur ab dem Jahr 2024.
+# ! Das funktioniert nur ab dem Jahr 2024.
 
 #TODO: Durchschnittstemperatur, Höchsttemperatur, Tieftemperatur, Temperaturdifferenz
 #TODO: Unterstützung für den alten Typ der Sensoren hinzufügen
 
-#* Sensor: id: 63047, dht22
+# * Sensor: id: 63047, dht22
