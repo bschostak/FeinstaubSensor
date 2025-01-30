@@ -1,11 +1,10 @@
 import datetime
-import requests  # Ist kein Fehler.
+import requests
 import csv
 import matplotlib.pyplot as plt
 import gzip
 import chardet
 from pathlib import Path
-
 
 # * Beispiel-URLs:
 # new: https://archive.sensor.community/2024-01-02/2024-01-02_dht22_sensor_113.csv
@@ -41,7 +40,6 @@ def generate_urls(start_year: int, end_year: int, sensor_type: str, sensor_id: s
 
     return urls
 
-
 def get_date_range_year(year: int) -> list[datetime.datetime]:
     """
     Gibt eine Liste von Datumsobjekten zurück, die alle Tage des angegebenen Jahres enthalten.
@@ -53,7 +51,6 @@ def get_date_range_year(year: int) -> list[datetime.datetime]:
     if first_day.year == datetime.datetime.now().year:
         last_day = datetime.datetime.now()
     return get_date_range(first_day, last_day)
-
 
 def get_date_range(from_time: datetime.datetime, to_time: datetime.datetime) -> list[datetime.datetime]:
     """
@@ -72,7 +69,6 @@ def get_date_range(from_time: datetime.datetime, to_time: datetime.datetime) -> 
         date_list.append(from_time + datetime.timedelta(days=i))
 
     return date_list
-
 
 def download_file(url: str, file_name: str) -> str | None:
     if Path(file_name).exists():
@@ -116,7 +112,6 @@ def open_csv_file(file_name: str, file_encoding: str) -> list[tuple[float, datet
 
     return extracted_data
 
-
 def calculate_average_temperature(data: list[tuple[float, datetime.datetime]]) -> float:
     total_temperature = 0.0
 
@@ -124,7 +119,6 @@ def calculate_average_temperature(data: list[tuple[float, datetime.datetime]]) -
         total_temperature += row[0]
 
     return total_temperature / len(data)
-
 
 def calculate_max_temperature(data: list[tuple[float, datetime.datetime]]) -> float:
     highest_temperature = data[0][0]
@@ -135,7 +129,6 @@ def calculate_max_temperature(data: list[tuple[float, datetime.datetime]]) -> fl
 
     return highest_temperature
 
-
 def calculate_min_temperature(data: list[tuple[float, datetime.datetime]]) -> float:
     lowest_temperature = data[0][0]
 
@@ -145,12 +138,10 @@ def calculate_min_temperature(data: list[tuple[float, datetime.datetime]]) -> fl
 
     return lowest_temperature
 
-
 def calculate_temperature_difference(data: list[tuple[float, datetime.datetime]]) -> float:
     temperature_difference = calculate_max_temperature(data) - calculate_min_temperature(data)
 
     return temperature_difference
-
 
 def draw_graph(analysed_data: list[tuple[datetime.datetime, float, float, float, float]]):
     dates = [data[0] for data in analysed_data]
@@ -176,7 +167,6 @@ def draw_graph(analysed_data: list[tuple[datetime.datetime, float, float, float,
 
     plt.savefig('temperaturanalyse.png')
 
-
 start_year = int(input("Geben Sie den Startjahr ein: ").strip() or "2024")
 end_year = int(input("Geben Sie den Endjahr ein: ").strip() or "2024")
 sensor_type = "dht22"
@@ -201,14 +191,15 @@ for url in urls:
     file_encoding = check_encoding_of_file(downloaded_file_name)
     csv_file = open_csv_file(downloaded_file_name, file_encoding)
     average = calculate_average_temperature(csv_file)
-    max = calculate_max_temperature(csv_file)
-    min = calculate_min_temperature(csv_file)
-    diff = calculate_temperature_difference(csv_file)
-    date = csv_file[0][1]
+    max_temperature = calculate_max_temperature(csv_file)
+    min_temperature = calculate_min_temperature(csv_file)
+    temperature_diff = calculate_temperature_difference(csv_file)
+    measurement_date = csv_file[0][1]
 
-    analysed_data.append((date, average, max, min, diff))
+    analysed_data.append((measurement_date, average, max_temperature, min_temperature, temperature_diff))
 
 draw_graph(analysed_data)
 
 # print(analysed_data) ##* Eine CLI-Ansicht der Daten
-# * Sensor: id: 63047, dht22
+
+#TODO: Unit Tests
