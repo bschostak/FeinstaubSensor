@@ -22,7 +22,7 @@ def parse_url(date: datetime.datetime, sensor_type: str, sensor_id: str) -> str:
     if date.year >= 2024:
         return f"{base_url}/{date.year}-{date.month:02d}-{date.day:02d}/{parse_file_name(date, sensor_type, sensor_id)}"
     else:
-        return f"{base_url}/{date.year}/{date.year}-{date.month:02d}-{date.day:02d}/{parse_file_name(date, sensor_type, sensor_id)}"
+        return f"{base_url}{date.year}/{date.year}-{date.month:02d}-{date.day:02d}/{parse_file_name(date, sensor_type, sensor_id)}"
 
 def generate_urls(start_year: int, end_year: int, sensor_type: str, sensor_id: str) -> list[tuple[str, str]]:
     urls: list[tuple[str, str]] = []
@@ -179,10 +179,6 @@ if start_year > end_year:
     print("Das Startjahr darf nicht größer als das Endjahr sein.")
     exit(1)
 
-if start_year < 2024:
-    print("Das Startjahr darf nicht kleiner als 2024 sein.")
-    exit(1)
-
 # [0] = Datum, [1] = Durchschnittstemperatur, [2] = Höchsttemperatur, [3] = Tiefstemperatur, [4] = Temperaturdifferenz
 analysed_data: list[tuple[datetime.datetime, float, float, float, float]] = []
 
@@ -208,3 +204,5 @@ draw_graph(analysed_data)
 
 # print(analysed_data) ##* Eine CLI-Ansicht der Daten
 # * Sensor: id: 63047, dht22
+
+# TODO: FIX open_csv_file() method
