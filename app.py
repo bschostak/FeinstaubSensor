@@ -95,8 +95,14 @@ def extract_archive(file_name: str) -> None:
         file.write(content)
     print(f"File extracted successfully.")
 
-def open_csv_file(file_name: str) -> list[tuple[float, datetime.datetime]]:
-    with open(file_name, "r") as file:
+def check_encoding_of_file(file_name: str) -> str:
+    with open(file_name, "rb") as file:
+        raw_data = file.read()
+        result = chardet.detect(raw_data)
+    return result["encoding"]
+
+def open_csv_file(file_name: str, file_encoding: str) -> list[tuple[float, datetime.datetime]]:
+    with open(file_name, "r", encoding=file_encoding) as file:
         reader = csv.reader(file, dialect='excel')
         data = list(reader)
     data.pop(0)
@@ -190,9 +196,10 @@ for url in urls:
         continue
     if downloaded_file_name.endswith(".gz"):
         extract_archive(downloaded_file_name)
-        # downloaded_file_name = downloaded_file_name.replace(".gz", "")
+        downloaded_file_name = downloaded_file_name.replace(".gz", "")
 
-    csv_file = open_csv_file(downloaded_file_name)
+    file_encoding = check_encoding_of_file(downloaded_file_name)
+    csv_file = open_csv_file(downloaded_file_name, file_encoding)
     average = calculate_average_temperature(csv_file)
     max = calculate_max_temperature(csv_file)
     min = calculate_min_temperature(csv_file)
@@ -205,5 +212,3 @@ draw_graph(analysed_data)
 
 # print(analysed_data) ##* Eine CLI-Ansicht der Daten
 # * Sensor: id: 63047, dht22
-
-# TODO: FIX open_csv_file() method
