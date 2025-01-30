@@ -107,7 +107,7 @@ def open_csv_file(file_name: str) -> list[tuple[float, datetime.datetime]]:
     return extracted_data
 
 
-def calculate_avarage_temperature(data: list[tuple[float, datetime.datetime]]) -> float:
+def calculate_average_temperature(data: list[tuple[float, datetime.datetime]]) -> float:
     total_temperature = 0.0
 
     for row in data:
@@ -194,13 +194,13 @@ for url in urls:
         downloaded_file_name = downloaded_file_name.replace(".gz", "")
 
     csv_file = open_csv_file(downloaded_file_name)
-    avarage = calculate_avarage_temperature(csv_file)
+    average = calculate_average_temperature(csv_file)
     max = calculate_max_temperature(csv_file)
     min = calculate_min_temperature(csv_file)
     diff = calculate_temperature_difference(csv_file)
     date = csv_file[0][1]
 
-    analysed_data.append((date, avarage, max, min, diff))
+    analysed_data.append((date, average, max, min, diff))
 
 # print(analysed_data) ##* Eine CLI-Ansicht der Daten
 draw_graph(analysed_data)
