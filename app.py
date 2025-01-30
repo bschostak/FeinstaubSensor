@@ -3,6 +3,7 @@ import requests  # Ist kein Fehler.
 import csv
 import matplotlib.pyplot as plt
 import gzip
+import chardet
 from pathlib import Path
 
 
