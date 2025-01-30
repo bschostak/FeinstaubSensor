@@ -87,9 +87,12 @@ def download_file(url: str, file_name: str) -> str | None:
         print(f"Failed to download file {file_name}. Status code: {response.status_code}")
         return None
 
-#TODO: Zu beenden
 def extract_archive(file_name: str) -> None:
-    pass
+    with gzip.open(file_name, "rb") as file:
+        content = file.read()
+    with open(file_name.replace(".gz", ""), "wb") as file:
+        file.write(content)
+    print(f"File extracted successfully.")
 
 def open_csv_file(file_name: str) -> list[tuple[float, datetime.datetime]]:
     with open(file_name, "r") as file:
@@ -185,13 +188,12 @@ analysed_data: list[tuple[datetime.datetime, float, float, float, float]] = []
 
 urls = generate_urls(start_year, end_year, sensor_type, sensor_id)
 for url in urls:
-    # print(url)
     downloaded_file_name = download_file(url=url[0], file_name=f"./sensor_data/{url[1]}")
     if downloaded_file_name is None:
         continue
     if downloaded_file_name.endswith(".gz"):
-        extract_gz(downloaded_file_name)
-        downloaded_file_name = downloaded_file_name.replace(".gz", "")
+        extract_archive(downloaded_file_name)
+        # downloaded_file_name = downloaded_file_name.replace(".gz", "")
 
     csv_file = open_csv_file(downloaded_file_name)
     average = calculate_average_temperature(csv_file)
@@ -202,11 +204,7 @@ for url in urls:
 
     analysed_data.append((date, average, max, min, diff))
 
-# print(analysed_data) ##* Eine CLI-Ansicht der Daten
 draw_graph(analysed_data)
 
-# ! Das funktioniert nur ab dem Jahr 2024.
-
-#TODO: Unterstützung für den alten Typ der Sensoren hinzufügen
-
+# print(analysed_data) ##* Eine CLI-Ansicht der Daten
 # * Sensor: id: 63047, dht22
