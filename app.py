@@ -167,39 +167,32 @@ def draw_graph(analysed_data: list[tuple[datetime.datetime, float, float, float,
 
     plt.savefig('temperaturanalyse.png')
 
-start_year = int(input("Geben Sie den Startjahr ein: ").strip() or "2024")
-end_year = int(input("Geben Sie den Endjahr ein: ").strip() or "2024")
-sensor_type = "dht22"
-sensor_id = input("Geben Sie die Sensor-ID ein: ").strip() or "63047"
+def analyze_sensor(start_year: int, end_year: int, sensor_type: str, sensor_id: str):
+    if start_year > end_year:
+        print("Das Startjahr darf nicht größer als das Endjahr sein.")
+        exit(1)
 
-if start_year > end_year:
-    print("Das Startjahr darf nicht größer als das Endjahr sein.")
-    exit(1)
+    analysed_data: list[tuple[datetime.datetime, float, float, float, float]] = []
 
-# [0] = Datum, [1] = Durchschnittstemperatur, [2] = Höchsttemperatur, [3] = Tiefstemperatur, [4] = Temperaturdifferenz
-analysed_data: list[tuple[datetime.datetime, float, float, float, float]] = []
+    urls = generate_urls(start_year, end_year, sensor_type, sensor_id)
+    for url in urls:
+        downloaded_file_name = download_file(url=url[0], file_name=f"./sensor_data/{url[1]}")
+        if downloaded_file_name is None:
+            continue
+        if downloaded_file_name.endswith(".gz"):
+            extract_archive(downloaded_file_name)
+            downloaded_file_name = downloaded_file_name.replace(".gz", "")
 
-urls = generate_urls(start_year, end_year, sensor_type, sensor_id)
-for url in urls:
-    downloaded_file_name = download_file(url=url[0], file_name=f"./sensor_data/{url[1]}")
-    if downloaded_file_name is None:
-        continue
-    if downloaded_file_name.endswith(".gz"):
-        extract_archive(downloaded_file_name)
-        downloaded_file_name = downloaded_file_name.replace(".gz", "")
+        file_encoding = check_encoding_of_file(downloaded_file_name)
+        csv_file = open_csv_file(downloaded_file_name, file_encoding)
+        average = calculate_average_temperature(csv_file)
+        max_temperature = calculate_max_temperature(csv_file)
+        min_temperature = calculate_min_temperature(csv_file)
+        temperature_diff = calculate_temperature_difference(csv_file)
+        measurement_date = csv_file[0][1]
 
-    file_encoding = check_encoding_of_file(downloaded_file_name)
-    csv_file = open_csv_file(downloaded_file_name, file_encoding)
-    average = calculate_average_temperature(csv_file)
-    max_temperature = calculate_max_temperature(csv_file)
-    min_temperature = calculate_min_temperature(csv_file)
-    temperature_diff = calculate_temperature_difference(csv_file)
-    measurement_date = csv_file[0][1]
+        analysed_data.append((measurement_date, average, max_temperature, min_temperature, temperature_diff))
 
-    analysed_data.append((measurement_date, average, max_temperature, min_temperature, temperature_diff))
-
-draw_graph(analysed_data)
+    return analysed_data
 
 # print(analysed_data) ##* Eine CLI-Ansicht der Daten
-
-#TODO: Unit Tests
