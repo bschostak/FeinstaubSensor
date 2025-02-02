@@ -2,7 +2,7 @@
 
 Ein Projekt für die Berufsschule.
 
-In diesem Projekt prüfen den Feinstaub in Deutschland.
+In diesem Projekt prüfen wir den Feinstaub in Deutschland.
 
 ## Overview:
 1. Download
