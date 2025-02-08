@@ -196,3 +196,4 @@ def analyze_sensor(start_year: int, end_year: int, sensor_type: str, sensor_id: 
     return analysed_data
 
 # print(analysed_data) ##* Eine CLI-Ansicht der Daten
+# TODO: Rebuild Project in Flask
