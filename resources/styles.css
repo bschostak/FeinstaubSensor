@@ -1,0 +1,65 @@
+body {
+    text-align: left;
+    -webkit-user-select: none;
+    user-select: none;
+    cursor: default;
+    margin: 25px;
+    font-family: Arial;
+    font-size: 15px;
+    font-weight: normal;
+    line-height: 1.5;
+    background-color: #282a36;
+    color: #f8f8f2;
+}
+
+h1{
+    font-size: 28px;
+    font-weight: lighter;
+    color: #f1fa8c;
+}
+
+h2{
+    font-size: 20px;
+    font-weight: lighter;
+    color: #50fa7b;
+}
+
+h3{
+    font-size: 18px;
+    font-weight: lighter;
+    color: #8be9fd;
+}
+
+.context-menu {
+    background-color: #44475a;
+    border: 1px solid #282a36;
+    border-radius: 5px;
+}
+
+.notification_switch {
+    font-size: 10px;
+}
+
+.select-wrapper input.select-dropdown {
+    color: #f1fa8c;
+}
+
+.select-wrapper input.select-dropdown:focus {
+    border-bottom: 1px solid #ff79c6 !important;
+}
+
+.select-wrapper .caret {
+    fill: white !important;
+}
+
+::placeholder {
+    color: #f1fa8c !important;
+    opacity: 1 !important;
+}
+
+/* ! Muss repariert werden */
+input:focus {
+    border-bottom-color:#ff79c6 !important;
+    -webkit-box-shadow: none !important;
+    box-shadow: none !important;
+}

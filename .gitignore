@@ -171,8 +171,8 @@ cython_debug/
 .pypirc
 .vscode/settings.json
 myenv/
+.venv/
 .mypy_cache/
-sensor_data/*.csv
-sensor_data/*.py
-sensor_data/*.csv.gz
 temperaturanalyse.png
+extensions/python/sensor_data/*.csv
+extensions/python/sensor_data/*.csv.gz
