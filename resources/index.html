@@ -1,121 +1,129 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8">
-    <title>Feinstaubsensor</title>
-    <link rel="stylesheet" href="styles.css">
-    <!--Import Google Icon Font-->
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <!--Import materialize.css-->
-    <link type="text/css" rel="stylesheet" href="css/materialize.min.css"  media="screen,projection"/>
 
-    <!--Let browser know website is optimized for mobile-->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    
-    <!-- Neutralino.js client. This file is gitignored, 
+<head>
+  <meta charset="UTF-8">
+  <title>Feinstaubsensor</title>
+  <link rel="stylesheet" href="styles.css">
+  <!--Import Google Icon Font-->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <!--Import materialize.css-->
+  <link type="text/css" rel="stylesheet" href="css/materialize.min.css" media="screen,projection" />
+
+  <!--Let browser know website is optimized for mobile-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Neutralino.js client. This file is gitignored, 
         because `neu update` typically downloads it.
         Avoid copy-pasting it. 
         -->
-    <script src="js/neutralino.js"></script>
-    <!-- Your app's source files -->
-    <script src="js/python-extension.js"></script>
-    <script src="js/main.js"></script>
-    <script>
-      if(NL_MODE === "cloud") {
-        e = document.getElementById("link-quit");
-        e.style.display = "block";
-      }
-    </script>
+  <script src="js/neutralino.js"></script>
+  <!-- Your app's source files -->
+  <script src="js/python-extension.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    if (NL_MODE === "cloud") {
+      e = document.getElementById("link-quit");
+      e.style.display = "block";
+    }
+  </script>
 
-    <script type="text/javascript" src="js/materialize.min.js"></script>
-    
-  </head>
-  <body>
-    <div id="neutralinoapp">
-      <h1 class="center-align">Feinstaubsensor</h1>
+  <script type="text/javascript" src="js/materialize.min.js"></script>
 
-      <hr>
-      <div class="row">
-        <div class="col s2 push-s10 notification_switch" style="margin-bottom: 30px;">
-          <div class="switch">
-            <label>
-              Off
-              <input type="checkbox" checked>
-              <span class="lever grey"></span>
-              On
-            </label>
-            <p style="margin-left: 13px;">Notification sound</p>
-          </div>
-      </div>
+</head>
 
-      </div>
-      
-      <div class="row">
-        <div class="col s8 push-s3 context-menu"><span class="flow-text">
-            Here will be shown the data from the sensor
-          </span></div>
-        <div class="col s2 pull-s8 context-menu"><span class="flow-text">
-            <div class="input-field">
-              <select>
-                <option value="" disabled selected>Choose start year</option>
-                <option value="2015">2015</option>
-                <option value="2016">2016</option>
-                <option value="2017">2017</option>
-                <option value="2018">2018</option>
-                <option value="2019">2019</option>
-                <option value="2020">2020</option>
-                <option value="2021">2021</option>
-                <option value="2022">2022</option>
-                <option value="2023">2023</option>
-                <option value="2024">2024</option>
-                <option value="2025">2025</option>
-              </select>
-            </div>
+<body>
+  <div id="neutralinoapp">
+    <h1 class="center-align">Feinstaubsensor</h1>
 
-            <div class="input-field">
-              <select>
-                <option value="" disabled selected>Choose end year</option>
-                <option value="2015">2015</option>
-                <option value="2016">2016</option>
-                <option value="2017">2017</option>
-                <option value="2018">2018</option>
-                <option value="2019">2019</option>
-                <option value="2020">2020</option>
-                <option value="2021">2021</option>
-                <option value="2022">2022</option>
-                <option value="2023">2023</option>
-                <option value="2024">2024</option>
-                <option value="2025">2025</option>
-              </select>
-
-              <div class="input-field" style="margin: 0; width: 100%; padding: 0%; color: #f1fa8c;">
-                <input placeholder="Enter sensor ID" id="sensorId" type="text" class="validate" style="color: #f1fa8c;">
-              </div>
-            </div>
-          </span>
+    <hr>
+    <div class="row">
+      <div class="col s2 push-s10 notification_switch" style="margin-bottom: 30px;">
+        <div class="switch">
+          <label>
+            Off
+            <input type="checkbox" checked>
+            <span class="lever grey"></span>
+            On
+          </label>
+          <p style="margin-left: 13px;">Notification sound</p>
         </div>
       </div>
 
-      <div style="margin-top:20px">
-        <a href="#" onclick="PYTHON.run('ping', 'Neutralino says PING!');">Send PING to Python</a><br>
-        <a href="#" onclick="PYTHON.run('longRun')">Start long-running background-task in Python</a><br>
-        <a id="link-quit" href="#" onclick="PYTHON.stop();" style="display:none">Quit</a>
-      </div>
-      <div style="margin-top:20px">
-        Received messages:
-      </div>
-      <div id="msg" style="margin-top:20px">
-      </div>
-
-      <button class="btn waves-effect waves-light green accent-3 grey-text text-darken-4" type="submit" name="action">Delete files
-        <i class="material-icons right">delete_forever</i>
-      </button>
-
-      <button class="btn waves-effect waves-light green accent-3 grey-text text-darken-4" type="submit" name="action">Submit
-        <i class="material-icons right">send</i>
-      </button>
-        
     </div>
 
-  </body>
+    <div class="row">
+      <div class="col s8 push-s3 context-menu"><span class="flow-text">
+          Here will be shown the data from the sensor
+        </span></div>
+      <div class="col s2 pull-s8 context-menu"><span class="flow-text">
+          <div class="input-field">
+            <select>
+              <option value="" disabled selected>Choose start year</option>
+              <option value="2015">2015</option>
+              <option value="2016">2016</option>
+              <option value="2017">2017</option>
+              <option value="2018">2018</option>
+              <option value="2019">2019</option>
+              <option value="2020">2020</option>
+              <option value="2021">2021</option>
+              <option value="2022">2022</option>
+              <option value="2023">2023</option>
+              <option value="2024">2024</option>
+              <option value="2025">2025</option>
+            </select>
+          </div>
+
+          <div class="input-field">
+            <select>
+              <option value="" disabled selected>Choose end year</option>
+              <option value="2015">2015</option>
+              <option value="2016">2016</option>
+              <option value="2017">2017</option>
+              <option value="2018">2018</option>
+              <option value="2019">2019</option>
+              <option value="2020">2020</option>
+              <option value="2021">2021</option>
+              <option value="2022">2022</option>
+              <option value="2023">2023</option>
+              <option value="2024">2024</option>
+              <option value="2025">2025</option>
+            </select>
+
+            <div class="input-field" style="margin: 0; width: 100%; padding: 0%; color: #f1fa8c;">
+              <input placeholder="Enter sensor ID" id="sensorId" type="text" class="validate" style="color: #f1fa8c;">
+            </div>
+          </div>
+        </span>
+      </div>
+    </div>
+
+
+    <button id="deleteDownloadedSensorDataButton"
+      class="btn waves-effect waves-light green accent-3 grey-text text-darken-4" type="submit" name="action">Delete
+      files
+      <i class="material-icons right">delete_forever</i>
+    </button>
+
+    <button onclick="PYTHON.run('ping')" id="submitFormDataButton"
+      class="btn waves-effect waves-light green accent-3 grey-text text-darken-4" type="submit" name="action">Submit
+      <i class="material-icons right">send</i>
+    </button>
+
+  </div>
+
+
+  <div style="margin-top:20px">
+    <a href="#" onclick="PYTHON.run('ping', 'Neutralino says PING!');">Send PING to Python</a><br>
+    <a href="#" onclick="PYTHON.run('longRun')">Start long-running background-task in Python</a><br>
+    <a id="link-quit" href="#" onclick="PYTHON.stop();" style="display:none">Quit</a>
+  </div>
+  <div style="margin-top:20px">
+    Received messages:
+  </div>
+  <div id="msg" style="margin-top:20px">
+  </div>
+
+</body>
+
 </html>
