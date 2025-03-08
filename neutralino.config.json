@@ -32,7 +32,7 @@
       "hidden": false,
       "center": true,
       "useSavedState": false,
-      "resizable": true,
+      "resizable": false,
       "exitProcessOnClose": false
     }
   },
