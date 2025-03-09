@@ -18,11 +18,11 @@
   "nativeAllowList": [
     "os.getPath",
     "os.execCommand",
-    "app.exit",
+    "app.*",
     "filesystem.getStats",
     "filesystem.createDirectory",
     "resources.extractFile",
-    "extensions.getStats",
+    "extensions.*",
     "debug.log"
   ],
   "globalVariables": {},
