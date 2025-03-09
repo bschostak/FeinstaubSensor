@@ -1,68 +1,35 @@
-# main.py 1.0.3
-#
-# Neutralino PythonExtension.
-#
-# (c)2023-2024 Harald Schneider - marketmix.com
-
-from NeutralinoExtension import *  # noqa: F403
 import time
-import server
 
-DEBUG = True    # Print incoming event messages to the console
+from NeutralinoExtension import NeutralinoExtension
 
-def taskLongRun(d):
-    #
-    # Simulate a long running task.
-    # Progress messages are queued and polled every 500 ms from the fronted.
 
+def task_long_run(d):
     for i in range(5):
         ext.sendMessage('pingResult', "Long-running task: %s / %s" % (i + 1, 5))
         time.sleep(1)
-
     ext.sendMessage("stopPolling")
 
-def ping(d):
-    #
-    # Send some data to the Neutralino app
 
+def ping(d):
     ext.sendMessage('pingResult', f'Python says PONG, in reply to "{d}"')
 
-def processAppEvent(d):
-    """
-    Handle Neutralino app events.
-    :param d: data package as JSON dict.
-    :return: ---
-    """
 
+def test(d):
+    ext.sendMessage('testResult', f'test: {d}')
+
+
+def process_app_event(d):
     if ext.isEvent(d, 'runPython'):
         (f, d) = ext.parseFunctionCall(d)
-
-        # Process incoming function calls:
-        # f: function-name, d: data as JSON or string
-        #
         if f == 'ping':
             ping(d)
         elif f == 'longRun':
             ext.sendMessage("startPolling")
-            ext.runThread(taskLongRun, 'taskLongRun', d)
+            ext.runThread(task_long_run, 'taskLongRun', d)
         elif f == 'test':
             ext.sendMessage('test', d)
-            ext.runThread(server.test, 'test', d)
+            ext.runThread(test, 'test', d)
 
 
-
-# start_year = int(input("Geben Sie den Startjahr ein (default=2024): ").strip() or "2024")
-# end_year = int(input("Geben Sie den Endjahr ein (default=2024): ").strip() or "2024")
-# sensor_type = str("dht22")
-# sensor_id = str(input("Geben Sie die Sensor-ID ein (default=63047): ").strip() or "63047")
-
-# [0] = Datum, [1] = Durchschnittstemperatur, [2] = Höchsttemperatur, [3] = Tiefstemperatur, [4] = Temperaturdifferenz
-# analysed_data = analyze_sensor(start_year, end_year, sensor_type, sensor_id)
-
-# draw_graph(analysed_data)
-
-
-# Activate extension
-#
-ext = NeutralinoExtension(DEBUG)
-ext.run(processAppEvent)
+ext = NeutralinoExtension(debug=True)
+ext.run(process_app_event)
