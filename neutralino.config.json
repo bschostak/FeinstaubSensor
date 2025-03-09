@@ -12,13 +12,20 @@
   "exportAuthInfo": true,
   "tokenSecurity": "one-time",
   "logging": {
-    "enabled": false,
+    "enabled": true,
     "writeToLogFile": false
   },
+  "nativeAllowList": [
+    "app.*",
+    "os.*",
+    "filesystem.*",
+    "resources.*",
+    "debug.log"
+  ],
   "globalVariables": {},
   "modes": {
     "window": {
-      "title": "",
+      "title": "FeinstaubSensor",
       "width": 1100,
       "height": 900,
       "minWidth": 500,

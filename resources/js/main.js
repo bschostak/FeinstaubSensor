@@ -1,9 +1,8 @@
 // Init Neutralino
 //
 Neutralino.init();
-Neutralino.events.on("windowClose", onWindowClose);
-Neutralino.events.on("pingResult", onPingResult);
-
+Neutralino.events.on('windowClose', onWindowClose);
+Neutralino.events.on('pingResult', onPingResult);
 
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -16,39 +15,43 @@ function onWindowClose() {
 }
 
 async function onPingResult(e) {
-    console.log("DBG RECEIVED: " + e.detail );
+    console.log('DBG RECEIVED: ' + e.detail);
 
-    let msg = document.getElementById("msg");
+    let msg = document.getElementById('msg');
     msg.innerHTML += e.detail + '<br>';
 }
-
-
-// Set title
-//
-(async () => {
-    await Neutralino.window.setTitle(`Neutralino PythonExtension ${NL_APPVERSION}`);
-})();
 
 // Init Python Extension
 const PYTHON = new PythonExtension(true)
 
-async function createTempFolder() {
+async function existsFile(path) {
+    try {
+        await Neutralino.filesystem.getStats(path);
+        return true;
+    } catch (error) {
+        return false;
+    }
+}
+
+async function createAppFolder() {
     const tmp = await Neutralino.os.getPath('config');
-    console.log("tmp: ", tmp);
+    console.log('tmp: ', tmp);
     const folder = tmp + '/.feinstaubsensor';
-    console.log("folder: ", folder);
-    Neutralino.filesystem.createDirectory(folder).then(() => {}).catch(err => console.error('createTempFolder error', JSON.stringify(err)));
+    console.log('folder: ', folder);
+
+    const exists = await existsFile(folder);
+    if(!exists) {
+        await Neutralino.filesystem.createDirectory(folder);
+        return folder;
+    }
     return folder;
 }
 
-async function extractJarFile(destination, pythonFileName) {
-    const pythonFilePath = destination + `${pythonFileName}.py`;
-    console.log("pythonFilePath: ", pythonFilePath);
-    Neutralino.resources.extractFile(`/extensions/python/${pythonFileName}.py`, pythonFilePath).then(value => {
-        startBackend(pythonFilePath).then(() => {
-            console.log('Backend started');
-        }).catch(err => console.error('error', JSON.stringify(err)));
-    });
+async function extractPyFile(destination, pythonFileName) {
+    const pythonFilePath = destination + `/${pythonFileName}.py`;
+    console.log('pythonFilePath: ', pythonFilePath);
+    await Neutralino.resources.extractFile(`/extensions/python/${pythonFileName}.py`, pythonFilePath);
+    return pythonFilePath;
 }
 
 async function startBackend(pythonFilePath) {
@@ -56,10 +59,16 @@ async function startBackend(pythonFilePath) {
     return Neutralino.os.execCommand('python3 ' + pythonFilePath);
 }
 
-createTempFolder().then(tmpFolder => {
-
-    extractJarFile(tmpFolder, 'server').then(appFile => {
-
+console.log('neu path', NL_PATH);
+createAppFolder().then(async (appFolder) => {
+    console.log('created app folder ', appFolder);
+    await extractPyFile(appFolder, 'app');
+    await extractPyFile(appFolder, 'NeutralinoExtension', false);
+    await extractPyFile(appFolder, 'server', false);
+    extractPyFile(appFolder, 'main', true).then((pythonFilePath) => {
+        console.log('Starting backend');
+        startBackend(pythonFilePath).then((result) => {
+            console.log('result: ', JSON.stringify(result));
+        });
     });
-
 });
