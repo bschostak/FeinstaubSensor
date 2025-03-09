@@ -7,7 +7,7 @@
 # pypy -m pip install --no-binary :all: simple-websocket-server
 #
 # (c)2023-2024 Harald Schneider - marketmix.com
-
+import logging
 from argparse import *
 import uuid, json, sys, os, signal
 from queue import Queue
@@ -15,6 +15,11 @@ from threading import Thread
 from typing import Callable, Iterable
 
 import websocket
+
+logging.basicConfig(filename='python-neutralino.log', level=logging.DEBUG)
+logger = logging.getLogger(__name__)
+FileOutputHandler = logging.FileHandler('python-neutralino.log')
+logger.addHandler(FileOutputHandler)
 
 class NeutralinoExtension:
     def __init__(self, debug=False):

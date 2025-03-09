@@ -16,10 +16,13 @@
     "writeToLogFile": false
   },
   "nativeAllowList": [
-    "app.*",
-    "os.*",
-    "filesystem.*",
-    "resources.*",
+    "os.getPath",
+    "os.execCommand",
+    "app.exit",
+    "filesystem.getStats",
+    "filesystem.createDirectory",
+    "resources.extractFile",
+    "extensions.getStats",
     "debug.log"
   ],
   "globalVariables": {},

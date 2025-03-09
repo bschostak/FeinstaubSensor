@@ -47,28 +47,47 @@ async function createAppFolder() {
     return folder;
 }
 
-async function extractPyFile(destination, pythonFileName) {
-    const pythonFilePath = destination + `/${pythonFileName}.py`;
-    console.log('pythonFilePath: ', pythonFilePath);
-    await Neutralino.resources.extractFile(`/extensions/python/${pythonFileName}.py`, pythonFilePath);
-    return pythonFilePath;
+async function extractFile(destination, filename) {
+    const filePath = destination + `/${filename}`;
+    console.log('filePath: ', filePath);
+    await Neutralino.resources.extractFile(`/extensions/python/${filename}`, filePath);
+    return filePath;
 }
 
-async function startBackend(pythonFilePath) {
-    console.log('python3 ' + pythonFilePath);
-    return Neutralino.os.execCommand('python3 ' + pythonFilePath);
+async function executePythonFile(appFolder, pythonFilePath) {
+    console.log(`source ${appFolder}/.venv/bin/activate && python3 ${pythonFilePath}`);
+    return Neutralino.os.execCommand(`cd ${appFolder} && source .venv/bin/activate && python3 ${pythonFilePath}`);
 }
 
-console.log('neu path', NL_PATH);
+async function createVenv(appFolder) {
+    if(await existsFile(`${appFolder}/.venv`)) {
+        return;
+    }
+    await Neutralino.os.execCommand(`python -m venv ${appFolder}/.venv`);
+    await Neutralino.os.execCommand(`chmod +x ${appFolder}/.venv/bin/activate`);
+    console.log(`${appFolder}/.venv/bin/pip install -r ${appFolder}/requirements.txt`);
+    return Neutralino.os.execCommand(`${appFolder}/.venv/bin/pip install -r ${appFolder}/requirements.txt`);
+}
+
+Neutralino.filesystem.getStats(NL_PATH).then((stats) => {
+    console.log('stats: ', JSON.stringify(stats));
+});
 createAppFolder().then(async (appFolder) => {
     console.log('created app folder ', appFolder);
-    await extractPyFile(appFolder, 'app');
-    await extractPyFile(appFolder, 'NeutralinoExtension', false);
-    await extractPyFile(appFolder, 'server', false);
-    extractPyFile(appFolder, 'main', true).then((pythonFilePath) => {
+    await extractFile(appFolder, 'requirements.txt');
+    await extractFile(appFolder, 'app.py');
+    await extractFile(appFolder, 'NeutralinoExtension.py', false);
+    await extractFile(appFolder, 'server.py', false);
+    await createVenv(appFolder);
+
+    extractFile(appFolder, 'main.py', true).then((pythonFilePath) => {
         console.log('Starting backend');
-        startBackend(pythonFilePath).then((result) => {
+        executePythonFile(appFolder, pythonFilePath).then((result) => {
             console.log('result: ', JSON.stringify(result));
         });
     });
 });
+console.log('PYTHON:', JSON.stringify(PYTHON));
+PYTHON.run('test', 'Heyho from JS').then((result) => {
+    console.log('result: ', JSON.stringify(result));
+}).catch((err) => {console.log('err: ', JSON.stringify(err))});
