@@ -12,6 +12,8 @@ from argparse import *
 import uuid, json, sys, os, signal
 from queue import Queue
 from threading import Thread
+from typing import Callable, Iterable
+
 import websocket
 
 class NeutralinoExtension:
@@ -152,7 +154,7 @@ class NeutralinoExtension:
         # Enable auto-reconnect with reconnect=5 :
         self.socket.run_forever()
 
-    def runThread(self, f, t, d):
+    def runThread(self, f: Callable[..., object], t: str, d: Iterable = ()):
         """
         Start a threaded background task.
         fn: Task function

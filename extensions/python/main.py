@@ -6,7 +6,7 @@
 
 from NeutralinoExtension import *  # noqa: F403
 import time
-from app import analyze_sensor, draw_graph
+import server
 
 DEBUG = True    # Print incoming event messages to the console
 
@@ -42,10 +42,13 @@ def processAppEvent(d):
         #
         if f == 'ping':
             ping(d)
-
-        if f == 'longRun':
+        elif f == 'longRun':
             ext.sendMessage("startPolling")
             ext.runThread(taskLongRun, 'taskLongRun', d)
+        elif f == 'test':
+            ext.sendMessage('test', d)
+            ext.runThread(server.test, 'test', d)
+
 
 
 # start_year = int(input("Geben Sie den Startjahr ein (default=2024): ").strip() or "2024")
