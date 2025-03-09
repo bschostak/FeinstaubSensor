@@ -14,11 +14,6 @@ async function onPingResult(e) {
     msg.innerHTML += e.detail + '<br>';
 }
 
-function test() {
-    let msg = document.getElementById("msg");
-    msg.innerHTML += "Test from Xojo ...." + '<br>';
-}
-
 // Init Neutralino
 //
 Neutralino.init();

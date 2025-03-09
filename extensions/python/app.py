@@ -168,10 +168,6 @@ def draw_graph(analysed_data: list[tuple[datetime.datetime, float, float, float,
     plt.savefig('temperaturanalyse.png')
 
 def analyze_sensor(start_year: int, end_year: int, sensor_type: str, sensor_id: str): #? Warum ist sensor_id ein String?
-    if start_year > end_year:
-        print("Das Startjahr darf nicht größer als das Endjahr sein.")
-        exit(1)
-
     analysed_data: list[tuple[datetime.datetime, float, float, float, float]] = []
 
     urls = generate_urls(start_year, end_year, sensor_type, sensor_id)

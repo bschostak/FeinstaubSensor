@@ -58,7 +58,7 @@
         </span></div>
       <div class="col s2 pull-s8 context-menu"><span class="flow-text">
           <div class="input-field">
-            <select>
+            <select id="startYear">
               <option value="" disabled selected>Choose start year</option>
               <option value="2015">2015</option>
               <option value="2016">2016</option>
@@ -75,7 +75,7 @@
           </div>
 
           <div class="input-field">
-            <select>
+            <select id="endYear">
               <option value="" disabled selected>Choose end year</option>
               <option value="2015">2015</option>
               <option value="2016">2016</option>
@@ -105,7 +105,7 @@
       <i class="material-icons right">delete_forever</i>
     </button>
 
-    <button onclick="PYTHON.run('ping')" id="submitFormDataButton"
+    <button id="submitFormDataButton"
       class="btn waves-effect waves-light green accent-3 grey-text text-darken-4" type="submit" name="action">Submit
       <i class="material-icons right">send</i>
     </button>
@@ -124,6 +124,7 @@
   <div id="msg" style="margin-top:20px">
   </div>
 
+  <script src="js/app.js"></script>
 </body>
 
 </html>
