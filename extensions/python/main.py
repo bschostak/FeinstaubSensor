@@ -43,17 +43,21 @@ def processAppEvent(d):
         #
         if f == 'ping':
             ping(d)
-
-        if f == 'longRun':
+        elif f == 'longRun':
             ext.sendMessage("startPolling")
             ext.runThread(taskLongRun, 'taskLongRun', d)
+        ##! A function call need to be registered here. VERY VERY IMPORTANT!
+        elif f == 'analyze_sensor_wrapper':
+            ext.runThread(analyze_sensor_wrapper, 'analyze_sensor_wrapper', d)
 
 
 #* Application Code (wrapper functions)
 
-def analyze_sensor_wrapper(start_year: int, end_year: int, sensor_type: str, sensor_id: str):
-    result = analyze_sensor(start_year, end_year, sensor_type, sensor_id)
-    return result
+def analyze_sensor_wrapper(d):
+    # result = analyze_sensor(start_year, end_year, sensor_type, sensor_id)
+    result = "XD"
+
+    ext.sendMessage('analyzeSensorWrapperResult', result)
 
 
 # Activate extension

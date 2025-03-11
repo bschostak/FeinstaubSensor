@@ -1,12 +1,13 @@
 let startYear = 0;
 let endYear = 0;
-// let sensorId = "";
-let sensorId = "dht22"; //! Should be deleted when the other sensor is added
+// let sensorType = "";
+let sensorType = "dht22"; //! Should be deleted when the other sensor is added
+let sensorId = ""; 
 
 function setFormDataFromHtmlDocument() {
     startYear = document.getElementById("startYear").value;
     endYear = document.getElementById("endYear").value;
-    // sensorId = document.getElementById("sensorId").value;
+    sensorId = document.getElementById("sensorId").value;
 }
 
 function checkYearFormValidity(startYear, endYear) {
@@ -22,7 +23,13 @@ function checkYearFormValidity(startYear, endYear) {
 }
 
 function sendSensorDataForSensorAnalyze() {
-    PYTHON.run("analyze_sensor_wrapper", [startYear, endYear, sensorId]);
+    PYTHON.run("analyze_sensor_wrapper", [startYear, endYear, sensorType, sensorId]);
+}
+
+function onAnalyzeSensorWrapperResult(e) {
+    console.log("DBG RECEIVED: " + e.detail);
+    let msg = document.getElementById("msg");
+    msg.innerHTML += e.detail + '<br>';
 }
 
 document.getElementById("submitFormDataButton").addEventListener("click", function () {
