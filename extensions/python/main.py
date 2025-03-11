@@ -6,7 +6,8 @@
 
 from NeutralinoExtension import *  # noqa: F403
 import time
-from app import analyze_sensor, draw_graph
+# from app import analyze_sensor, draw_graph
+from gui_tests import analyze_sensor
 
 DEBUG = True    # Print incoming event messages to the console
 
@@ -57,6 +58,11 @@ def processAppEvent(d):
 # analysed_data = analyze_sensor(start_year, end_year, sensor_type, sensor_id)
 
 # draw_graph(analysed_data)
+
+def analyze_sensor_wrapper(start_year: int, end_year: int, sensor_type: str, sensor_id: str):
+    result = analyze_sensor(start_year, end_year, sensor_type, sensor_id)
+    #TODO: Mach das hier weiter. :)
+    return result
 
 
 # Activate extension

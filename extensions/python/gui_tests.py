@@ -2,6 +2,7 @@
 #!This file is for testing the GUI and file creation with Python extension.
 ###########################################################################
 
+from NeutralinoExtension import *  # noqa: F403
 import datetime
 import requests
 import csv
@@ -180,6 +181,8 @@ def analyze_sensor(start_year: int, end_year: int, sensor_type: str, sensor_id: 
 
     # urls = generate_urls(start_year, end_year, sensor_type, sensor_id)
     sensor_url :str = generate_single_sensor_url(start_year, end_year, sensor_type, sensor_id)
+
+    return sensor_url
     
     # for url in urls:
     #     downloaded_file_name = download_file(url=url[0], file_name=f"./sensor_data/{url[1]}")

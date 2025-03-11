@@ -22,7 +22,7 @@ function checkYearFormValidity(startYear, endYear) {
 }
 
 function sendSensorDataForSensorAnalyze() {
-    console.log("SEND DATA!");
+    PYTHON.run("analyze_sensor_wrapper", [startYear, endYear, sensorId]);
 }
 
 document.getElementById("submitFormDataButton").addEventListener("click", function () {
