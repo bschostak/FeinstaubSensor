@@ -53,7 +53,6 @@ def processAppEvent(d):
 
 def analyze_sensor_wrapper(start_year: int, end_year: int, sensor_type: str, sensor_id: str):
     result = analyze_sensor(start_year, end_year, sensor_type, sensor_id)
-    #TODO: Mach das hier weiter. :)
     return result
 
 
