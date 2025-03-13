@@ -38,9 +38,8 @@ document.getElementById("submitFormDataButton").addEventListener("click", functi
 });
 
 function onAnalyzeSensorWrapperResult(e) {
-    console.log("DBG RECEIVED: " + e.detail);
-    let msg = document.getElementById("msg");
-    msg.innerHTML += e.detail + '<br>';
+    let userDisplay = document.getElementById("userDisplay");
+    userDisplay.innerHTML += e.detail + '<br>';
 }
 
 Neutralino.events.on("analyzeSensorWrapperResult", onAnalyzeSensorWrapperResult);

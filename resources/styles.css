@@ -57,6 +57,13 @@ h3{
     opacity: 1 !important;
 }
 
+#userDisplay {
+    height: 400px;
+    overflow-y: auto;
+    padding: 10px;
+    font-size: 12px;
+}
+
 /* ! Muss repariert werden */
 input:focus {
     border-bottom-color:#ff79c6 !important;

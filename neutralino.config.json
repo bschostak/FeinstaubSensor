@@ -20,7 +20,7 @@
     "window": {
       "title": "",
       "width": 1100,
-      "height": 900,
+      "height": 800,
       "minWidth": 500,
       "minHeight": 200,
       "fullScreen": false,
