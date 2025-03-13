@@ -5,7 +5,7 @@
 from NeutralinoExtension import *  # noqa: F403
 import datetime
 import requests
-import csv
+#* WE could fix error with "pip install types-requests" THAT ABOVE
 import matplotlib.pyplot as plt
 import gzip
 import chardet
@@ -81,16 +81,19 @@ def get_date_range(from_time: datetime.datetime, to_time: datetime.datetime) -> 
 
 def download_file(url: str, file_name: str) -> str | None:
     if Path(file_name).exists():
-        print(f"File {file_name} already exists.")
+        # print(f"File {file_name} already exists.")
+        ext.sendMessage('analyzeSensorWrapperResult', f"File {file_name} already exists.")
         return file_name
     response = requests.get(url)
     if response.status_code == 200:
         with open(file_name, "wb") as file:
             file.write(response.content)
-        print(f"File {file_name} downloaded successfully.")
+        # print(f"File {file_name} downloaded successfully.")
+        ext.sendMessage('analyzeSensorWrapperResult', f"File {file_name} downloaded successfully.")
         return file_name
     else:
-        print(f"Failed to download file {file_name}. Status code: {response.status_code}")
+        # print(f"Failed to download file {file_name}. Status code: {response.status_code}")
+        ext.sendMessage('analyzeSensorWrapperResult', f"Failed to download file {file_name}. Status code: {response.status_code}")
         return None
 
 def extract_archive(file_name: str) -> None:
@@ -98,7 +101,8 @@ def extract_archive(file_name: str) -> None:
         content = file.read()
     with open(file_name.replace(".gz", ""), "wb") as file:
         file.write(content)
-    print(f"File extracted successfully.")
+    # print(f"File extracted successfully.")
+    ext.sendMessage('analyzeSensorWrapperResult', f"File {file_name} extracted successfully.")
 
 def check_encoding_of_file(file_name: str) -> str:
     with open(file_name, "rb") as file:
@@ -174,6 +178,8 @@ def draw_graph(analysed_data: list[tuple[datetime.datetime, float, float, float,
     plt.tight_layout()
 
     plt.savefig('temperaturanalyse.png')
+
+
 def analyze_sensor(start_year: int, end_year: int, sensor_type: str, sensor_id: str): #? Warum ist sensor_id ein String?
     # analysed_data: list[tuple[datetime.datetime, float, float, float, float]] = []
 
