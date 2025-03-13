@@ -15,7 +15,7 @@ from pathlib import Path
 # new: https://archive.sensor.community/2024-01-02/2024-01-02_dht22_sensor_113.csv
 # old: https://archive.sensor.community/2023/2023-01-01/2023-01-02_dht22_sensor_113.csv.gz
 
-base_url = "http://archive.sensor.community/"
+base_url :str = "http://archive.sensor.community/"
 
 def parse_file_name(date: datetime.datetime, sensor_type: str, sensor_id: str) -> str:
     if date.year >= 2024:
