@@ -26,12 +26,6 @@ function sendSensorDataForSensorAnalyze() {
     PYTHON.run("analyze_sensor_wrapper", [startYear, endYear, sensorType, sensorId]);
 }
 
-function onAnalyzeSensorWrapperResult(e) {
-    console.log("DBG RECEIVED: " + e.detail);
-    let msg = document.getElementById("msg");
-    msg.innerHTML += e.detail + '<br>';
-}
-
 document.getElementById("submitFormDataButton").addEventListener("click", function () {
     setFormDataFromHtmlDocument();
 
@@ -42,3 +36,11 @@ document.getElementById("submitFormDataButton").addEventListener("click", functi
 
     sendSensorDataForSensorAnalyze();
 });
+
+function onAnalyzeSensorWrapperResult(e) {
+    console.log("DBG RECEIVED: " + e.detail);
+    let msg = document.getElementById("msg");
+    msg.innerHTML += e.detail + '<br>';
+}
+
+Neutralino.events.on("analyzeSensorWrapperResult", onAnalyzeSensorWrapperResult);
