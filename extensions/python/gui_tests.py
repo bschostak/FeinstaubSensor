@@ -46,7 +46,7 @@ def generate_urls(start_year: int, end_year: int, sensor_type: str, sensor_id: s
     return urls
 
 def generate_single_sensor_url(start_year: int, end_year: int, sensor_type: str, sensor_id: str) -> str:
-    url :str = start_year + "-" + end_year + "/" + sensor_type + "/" + sensor_id + ".csv"
+    url :str = "sensor.blablabla.de/" + str(start_year) + "-" + str(end_year) + "/" + str(sensor_type) + "/" + str(sensor_id) + ".csv"
     return url
 
 def get_date_range_year(year: int) -> list[datetime.datetime]:
@@ -104,8 +104,7 @@ def check_encoding_of_file(file_name: str) -> str:
     with open(file_name, "rb") as file:
         raw_data = file.read()
         result = chardet.detect(raw_data)
-    return result["encoding"]
-
+    return result["encoding"] if result["encoding"] is not None else "utf-8"
 def open_csv_file(file_name: str, file_encoding: str) -> list[tuple[float, datetime.datetime]]:
     with open(file_name, "r", encoding=file_encoding) as file:
         reader = csv.reader(file, dialect='excel')
@@ -153,7 +152,7 @@ def calculate_temperature_difference(data: list[tuple[float, datetime.datetime]]
     return temperature_difference
 
 def draw_graph(analysed_data: list[tuple[datetime.datetime, float, float, float, float]]):
-    dates = [data[0] for data in analysed_data]
+    dates = [data[0].timestamp() for data in analysed_data]
     avg_temps = [data[1] for data in analysed_data]
     high_temps = [data[2] for data in analysed_data]
     low_temps = [data[3] for data in analysed_data]
@@ -175,7 +174,6 @@ def draw_graph(analysed_data: list[tuple[datetime.datetime, float, float, float,
     plt.tight_layout()
 
     plt.savefig('temperaturanalyse.png')
-
 def analyze_sensor(start_year: int, end_year: int, sensor_type: str, sensor_id: str): #? Warum ist sensor_id ein String?
     # analysed_data: list[tuple[datetime.datetime, float, float, float, float]] = []
 

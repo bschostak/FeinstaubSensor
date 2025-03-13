@@ -35,6 +35,8 @@ def processAppEvent(d):
     :return: ---
     """
 
+#* Registered functions
+
     if ext.isEvent(d, 'runPython'):
         (f, d) = ext.parseFunctionCall(d)
 
@@ -46,7 +48,6 @@ def processAppEvent(d):
         elif f == 'longRun':
             ext.sendMessage("startPolling")
             ext.runThread(taskLongRun, 'taskLongRun', d)
-        ##! A function call need to be registered here. VERY VERY IMPORTANT!
         elif f == 'analyze_sensor_wrapper':
             ext.runThread(analyze_sensor_wrapper, 'analyze_sensor_wrapper', d)
 
