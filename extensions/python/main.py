@@ -54,11 +54,9 @@ def processAppEvent(d):
 #* Application Code (wrapper functions)
 
 def analyze_sensor_wrapper(d):
-    # result = analyze_sensor(start_year, end_year, sensor_type, sensor_id)
-    result = "XD"
+    result = analyze_sensor(d[0], d[1], d[2], d[3])
 
     ext.sendMessage('analyzeSensorWrapperResult', result)
-
 
 # Activate extension
 #
