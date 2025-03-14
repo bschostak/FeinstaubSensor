@@ -11,6 +11,9 @@ import gzip
 import chardet
 from pathlib import Path
 
+#* Extension from Neutralino.js
+ext = None  # Will be set from main.py
+
 # * Beispiel-URLs:
 # new: https://archive.sensor.community/2024-01-02/2024-01-02_dht22_sensor_113.csv
 # old: https://archive.sensor.community/2023/2023-01-01/2023-01-02_dht22_sensor_113.csv.gz
@@ -209,3 +212,20 @@ def analyze_sensor(start_year: int, end_year: int, sensor_type: str, sensor_id: 
     # return analysed_data
 
 # print(analysed_data) ##* Eine CLI-Ansicht der Daten
+
+
+#! To delte later, when the normal function is implemented
+def analyze_sensor_with_messaging(param1, param2, param3, param4, debug=False, extension=None):
+    global ext
+    # Use the provided extension or the global one
+    if extension:
+        ext = extension
+    
+    # Call your analyze_sensor function
+    result = analyze_sensor(param1, param2, param3, param4)
+    
+    # Send the result back to the frontend if we have an extension
+    if ext:
+        ext.sendMessage('analyzeSensorWrapperResult', result)
+    
+    return result
