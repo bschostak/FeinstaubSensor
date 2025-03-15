@@ -50,19 +50,14 @@ def processAppEvent(d):
             ext.runThread(taskLongRun, 'taskLongRun', d)
         elif f == 'analyze_sensor_wrapper':
             ext.runThread(analyze_sensor_wrapper, 'analyze_sensor_wrapper', d)
-        elif f == 'analyze_sensor_wrapper_with_messaging':
-            ext.runThread(analyze_sensor_with_messaging, 'analyze_sensor_wrapper_with_messaging', d)
-
+        elif f == 'analyze_sensor':
+            ext.runThread(gui_tests.analyze_sensor, 'analyze_sensor', d)
 
 #* Application Code (wrapper functions)
 
 def analyze_sensor_wrapper(d):
-    # result = analyze_sensor(d[0], d[1], d[2], d[3])
+    gui_tests.analyze_sensor(d[0], d[1], d[2], d[3], extension=ext)
 
-    # analyze_sensor_with_messaging(d[0], d[1], d[2], d[3])
-    gui_tests.analyze_sensor_with_messaging(d[0], d[1], d[2], d[3], extension=ext)
-
-    # ext.sendMessage('analyzeSensorWrapperResult', result)
 
 # Activate extension
 #

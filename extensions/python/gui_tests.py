@@ -6,6 +6,7 @@ from NeutralinoExtension import *  # noqa: F403
 import datetime
 import requests
 #* WE could fix error with "pip install types-requests" THAT ABOVE
+import csv
 import matplotlib.pyplot as plt
 import gzip
 import chardet
@@ -40,7 +41,7 @@ def generate_urls(start_year: int, end_year: int, sensor_type: str, sensor_id: s
     # [(sensor_url, file_name)
     # (sensor_url, file_name)]
 
-    for year in range(start_year, end_year + 1):
+    for year in range(int(start_year), int(end_year) + 1):
         for date in get_date_range_year(year):
             file_name = parse_file_name(date, sensor_type, sensor_id)
             sensor_url = parse_url(date, sensor_type, sensor_id)
@@ -82,7 +83,10 @@ def get_date_range(from_time: datetime.datetime, to_time: datetime.datetime) -> 
 
     return date_list
 
-def download_file(url: str, file_name: str) -> str | None:
+def download_file(url: str, file_name: str, extension=None) -> str | None:
+    global ext
+    ext = extension
+
     if Path(file_name).exists():
         # print(f"File {file_name} already exists.")
         ext.sendMessage('analyzeSensorWrapperResult', f"File {file_name} already exists.")
@@ -99,7 +103,10 @@ def download_file(url: str, file_name: str) -> str | None:
         ext.sendMessage('analyzeSensorWrapperResult', f"Failed to download file {file_name}. Status code: {response.status_code}")
         return None
 
-def extract_archive(file_name: str) -> None:
+def extract_archive(file_name: str, extension=None) -> None:
+    global ext
+    ext = extension
+
     with gzip.open(file_name, "rb") as file:
         content = file.read()
     with open(file_name.replace(".gz", ""), "wb") as file:
@@ -183,33 +190,33 @@ def draw_graph(analysed_data: list[tuple[datetime.datetime, float, float, float,
     plt.savefig('temperaturanalyse.png')
 
 
-def analyze_sensor(start_year: int, end_year: int, sensor_type: str, sensor_id: str): #? Warum ist sensor_id ein String?
-    # analysed_data: list[tuple[datetime.datetime, float, float, float, float]] = []
+def analyze_sensor(start_year: int, end_year: int, sensor_type: str, sensor_id: str, debug=False, extension=None):
+    global ext
+    ext = extension
 
-    # urls = generate_urls(start_year, end_year, sensor_type, sensor_id)
-    sensor_url :str = generate_single_sensor_url(start_year, end_year, sensor_type, sensor_id)
+    analysed_data: list[tuple[datetime.datetime, float, float, float, float]] = []
 
-    return sensor_url
-    
-    # for url in urls:
-    #     downloaded_file_name = download_file(url=url[0], file_name=f"./sensor_data/{url[1]}")
-    #     if downloaded_file_name is None:
-    #         continue
-    #     if downloaded_file_name.endswith(".gz"):
-    #         extract_archive(downloaded_file_name)
-    #         downloaded_file_name = downloaded_file_name.replace(".gz", "")
+    urls = generate_urls(start_year, end_year, sensor_type, sensor_id)
 
-    #     file_encoding = check_encoding_of_file(downloaded_file_name)
-    #     csv_file = open_csv_file(downloaded_file_name, file_encoding)
-    #     average = calculate_average_temperature(csv_file)
-    #     max_temperature = calculate_max_temperature(csv_file)
-    #     min_temperature = calculate_min_temperature(csv_file)
-    #     temperature_diff = calculate_temperature_difference(csv_file)
-    #     measurement_date = csv_file[0][1]
+    for url in urls:
+        downloaded_file_name = download_file(url=url[0], file_name=f"./sensor_data/{url[1]}", extension=extension)
+        if downloaded_file_name is None:
+            continue
+        if downloaded_file_name.endswith(".gz"):
+            extract_archive(downloaded_file_name, extension=extension)
+            downloaded_file_name = downloaded_file_name.replace(".gz", "")
 
-    #     analysed_data.append((measurement_date, average, max_temperature, min_temperature, temperature_diff))
+        file_encoding = check_encoding_of_file(downloaded_file_name)
+        csv_file = open_csv_file(downloaded_file_name, file_encoding)
+        average = calculate_average_temperature(csv_file)
+        max_temperature = calculate_max_temperature(csv_file)
+        min_temperature = calculate_min_temperature(csv_file)
+        temperature_diff = calculate_temperature_difference(csv_file)
+        measurement_date = csv_file[0][1]
 
-    # return analysed_data
+        analysed_data.append((measurement_date, average, max_temperature, min_temperature, temperature_diff))
+
+    return analysed_data
 
 # print(analysed_data) ##* Eine CLI-Ansicht der Daten
 

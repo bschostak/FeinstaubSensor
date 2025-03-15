@@ -2,7 +2,7 @@ let startYear = 0;
 let endYear = 0;
 // let sensorType = "";
 let sensorType = "dht22"; //! Should be deleted when the other sensor is added
-let sensorId = ""; 
+let sensorId = "4594"; //TODO: Make error message when sensorId is not set
 
 function setFormDataFromHtmlDocument() {
     startYear = document.getElementById("startYear").value;
@@ -22,10 +22,6 @@ function checkYearFormValidity(startYear, endYear) {
     }
 }
 
-function sendSensorDataForSensorAnalyze() {
-    PYTHON.run("analyze_sensor_wrapper", [startYear, endYear, sensorType, sensorId]);
-}
-
 document.getElementById("submitFormDataButton").addEventListener("click", function () {
     setFormDataFromHtmlDocument();
 
@@ -34,7 +30,7 @@ document.getElementById("submitFormDataButton").addEventListener("click", functi
         return;
     }
 
-    sendSensorDataForSensorAnalyze();
+    PYTHON.run("analyze_sensor_wrapper", [startYear, endYear, sensorType, sensorId]);
 });
 
 function onAnalyzeSensorWrapperResult(e) {
