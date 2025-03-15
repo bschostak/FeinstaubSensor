@@ -22,6 +22,31 @@ function checkYearFormValidity(startYear, endYear) {
     }
 }
 
+function onDisplayImage(base64Data, altText = "Sensor Data Visualization") {
+    let userDisplay = document.getElementById("userDisplay");
+    userDisplay.innerHTML = ""; // Clear the current content
+
+    console.log("BASE64test", JSON.stringify(base64Data));
+    
+    
+    // Create an image element
+    let imgElement = document.createElement("img");
+    
+    // Set the source to the base64 data
+    // Make sure the base64Data includes the proper prefix if it doesn't already
+    if (!base64Data.startsWith('data:image')) {
+        imgElement.src = 'data:image/png;base64,' + base64Data;
+    } else {
+        imgElement.src = base64Data;
+    }
+    
+    imgElement.alt = altText;
+    imgElement.style.maxWidth = "100%"; // Make the image responsive
+    
+    // Append the image to the userDisplay div
+    userDisplay.appendChild(imgElement);
+}
+
 document.getElementById("submitFormDataButton").addEventListener("click", function () {
     setFormDataFromHtmlDocument();
 
@@ -38,4 +63,11 @@ function onAnalyzeSensorWrapperResult(e) {
     userDisplay.innerHTML += e.detail + '<br>';
 }
 
+function onCleanResultWindow(e) {
+    let userDisplay = document.getElementById("userDisplay");
+    userDisplay.innerHTML = "";
+}
+
 Neutralino.events.on("analyzeSensorWrapperResult", onAnalyzeSensorWrapperResult);
+Neutralino.events.on("cleanResultWindow", onPingResult);
+Neutralino.events.on("displaySensorImage", onDisplayImage);

@@ -9,7 +9,10 @@ import time
 # from app import analyze_sensor, draw_graph
 import gui_tests
 
-DEBUG = True    # Print incoming event messages to the console
+import base64
+
+DEBUG = True  # Print incoming event messages to the console
+
 
 def taskLongRun(d):
     #
@@ -17,16 +20,18 @@ def taskLongRun(d):
     # Progress messages are queued and polled every 500 ms from the fronted.
 
     for i in range(5):
-        ext.sendMessage('pingResult', "Long-running task: %s / %s" % (i + 1, 5))
+        ext.sendMessage("pingResult", "Long-running task: %s / %s" % (i + 1, 5))
         time.sleep(1)
 
     ext.sendMessage("stopPolling")
+
 
 def ping(d):
     #
     # Send some data to the Neutralino app
 
-    ext.sendMessage('pingResult', f'Python says PONG, in reply to "{d}"')
+    ext.sendMessage("pingResult", f'Python says PONG, in reply to "{d}"')
+
 
 def processAppEvent(d):
     """
@@ -35,28 +40,42 @@ def processAppEvent(d):
     :return: ---
     """
 
-#* Registered functions
+    # * Registered functions
 
-    if ext.isEvent(d, 'runPython'):
+    if ext.isEvent(d, "runPython"):
         (f, d) = ext.parseFunctionCall(d)
 
         # Process incoming function calls:
         # f: function-name, d: data as JSON or string
         #
-        if f == 'ping':
+        if f == "ping":
             ping(d)
-        elif f == 'longRun':
+        elif f == "longRun":
             ext.sendMessage("startPolling")
-            ext.runThread(taskLongRun, 'taskLongRun', d)
-        elif f == 'analyze_sensor_wrapper':
-            ext.runThread(analyze_sensor_wrapper, 'analyze_sensor_wrapper', d)
-        elif f == 'analyze_sensor':
-            ext.runThread(gui_tests.analyze_sensor, 'analyze_sensor', d)
+            ext.runThread(taskLongRun, "taskLongRun", d)
+        elif f == "analyze_sensor_wrapper":
+            ext.runThread(analyze_sensor_wrapper, "analyze_sensor_wrapper", d)
 
-#* Application Code (wrapper functions)
+
+# * Application Code (wrapper functions)
+def get_image_base64(image_path):
+    with open(image_path, "rb") as image_file:
+        encoded_string = base64.b64encode(image_file.read()).decode("utf-8")
+    return encoded_string
+
 
 def analyze_sensor_wrapper(d):
-    gui_tests.analyze_sensor(d[0], d[1], d[2], d[3], extension=ext)
+    analyzed_sensor_data = gui_tests.analyze_sensor(
+        d[0], d[1], d[2], d[3], extension=ext
+    )
+    graph = gui_tests.draw_graph(analyzed_sensor_data)
+    print("graph", graph)
+    
+    image_path = "temperaturanalyse.png"  # Path relative to your application
+    base64_data = get_image_base64(image_path)
+
+    ext.sendMessage("displaySensorImage", base64_data)
+    # ext.sendMessage('displaySensorImage', "temperaturanalyse.png")
 
 
 # Activate extension

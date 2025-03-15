@@ -187,7 +187,7 @@ def draw_graph(analysed_data: list[tuple[datetime.datetime, float, float, float,
     plt.xticks(rotation=45)
     plt.tight_layout()
 
-    plt.savefig('temperaturanalyse.png')
+    return plt.savefig('temperaturanalyse.png')
 
 
 def analyze_sensor(start_year: int, end_year: int, sensor_type: str, sensor_id: str, debug=False, extension=None):
