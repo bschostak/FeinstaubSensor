@@ -22,7 +22,7 @@ function checkYearFormValidity(startYear, endYear) {
     }
 }
 
-function onDisplayImage(base64Data, altText = "Sensor Data Visualization") {
+function onDisplayImage(base64Data) {
     let userDisplay = document.getElementById("userDisplay");
     userDisplay.innerHTML = ""; // Clear the current content
 
@@ -34,13 +34,17 @@ function onDisplayImage(base64Data, altText = "Sensor Data Visualization") {
     
     // Set the source to the base64 data
     // Make sure the base64Data includes the proper prefix if it doesn't already
-    if (!base64Data.startsWith('data:image')) {
-        imgElement.src = 'data:image/png;base64,' + base64Data;
-    } else {
-        imgElement.src = base64Data;
-    }
+
+    // if (!base64Data.startsWith('data:image')) {
+    //     imgElement.src = 'data:image/png;base64,' + base64Data;
+    // } else {
+    //     imgElement.src = base64Data;
+    // }
     
-    imgElement.alt = altText;
+    imgElement.src = base64Data;
+
+    // imgElement.alt = altText;
+
     imgElement.style.maxWidth = "100%"; // Make the image responsive
     
     // Append the image to the userDisplay div

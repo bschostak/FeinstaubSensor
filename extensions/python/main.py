@@ -9,8 +9,6 @@ import time
 # from app import analyze_sensor, draw_graph
 import gui_tests
 
-import base64
-
 DEBUG = True  # Print incoming event messages to the console
 
 
@@ -58,24 +56,14 @@ def processAppEvent(d):
 
 
 # * Application Code (wrapper functions)
-def get_image_base64(image_path):
-    with open(image_path, "rb") as image_file:
-        encoded_string = base64.b64encode(image_file.read()).decode("utf-8")
-    return encoded_string
-
-
 def analyze_sensor_wrapper(d):
     analyzed_sensor_data = gui_tests.analyze_sensor(
         d[0], d[1], d[2], d[3], extension=ext
     )
-    graph = gui_tests.draw_graph(analyzed_sensor_data)
-    print("graph", graph)
-    
-    image_path = "temperaturanalyse.png"  # Path relative to your application
-    base64_data = get_image_base64(image_path)
+
+    base64_data: str = gui_tests.draw_graph(analyzed_sensor_data)
 
     ext.sendMessage("displaySensorImage", base64_data)
-    # ext.sendMessage('displaySensorImage', "temperaturanalyse.png")
 
 
 # Activate extension

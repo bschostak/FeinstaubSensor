@@ -7,6 +7,7 @@ import datetime
 import requests
 #* WE could fix error with "pip install types-requests" THAT ABOVE
 import csv
+import base64
 import matplotlib.pyplot as plt
 import gzip
 import chardet
@@ -165,6 +166,11 @@ def calculate_temperature_difference(data: list[tuple[float, datetime.datetime]]
 
     return temperature_difference
 
+def get_image_base64(image_path):
+    with open(image_path, "rb") as image_file:
+        encoded_string = base64.b64encode(image_file.read()).decode("utf-8")
+    return encoded_string
+
 def draw_graph(analysed_data: list[tuple[datetime.datetime, float, float, float, float]]):
     dates = [data[0].timestamp() for data in analysed_data]
     avg_temps = [data[1] for data in analysed_data]
@@ -186,8 +192,14 @@ def draw_graph(analysed_data: list[tuple[datetime.datetime, float, float, float,
     plt.grid(True)
     plt.xticks(rotation=45)
     plt.tight_layout()
+    
+    plt.savefig('temperaturanalyse.png')
 
-    return plt.savefig('temperaturanalyse.png')
+    base64_image: str = get_image_base64('temperaturanalyse.png')
+
+    return base64_image
+    #TODO: return base64 string and convert the image to base64 string before sending it to the extension (function call)
+    # return plt.savefig('temperaturanalyse.png')
 
 
 def analyze_sensor(start_year: int, end_year: int, sensor_type: str, sensor_id: str, debug=False, extension=None):
