@@ -12,6 +12,12 @@ body {
     color: #f8f8f2;
 }
 
+img {
+    -webkit-user-select: none;
+    user-select: none;
+    pointer-events: none;
+}
+
 h1{
     font-size: 28px;
     font-weight: lighter;
@@ -55,6 +61,13 @@ h3{
 ::placeholder {
     color: #f1fa8c !important;
     opacity: 1 !important;
+}
+
+#userDisplay {
+    height: 430px;
+    overflow-y: auto;
+    padding: 10px;
+    font-size: 12px;
 }
 
 /* ! Muss repariert werden */

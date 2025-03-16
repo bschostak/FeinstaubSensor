@@ -1,20 +1,59 @@
-function checkYearProportion(startYear, endYear) {
+let startYear = 0;
+let endYear = 0;
+// let sensorType = "";
+let sensorType = "dht22"; //! Should be deleted when the other sensor is added
+let sensorId = "4594"; //TODO: Make error message when sensorId is not set
+
+function setFormDataFromHtmlDocument() {
+    startYear = document.getElementById("startYear").value;
+    endYear = document.getElementById("endYear").value;
+    sensorId = document.getElementById("sensorId").value;
+}
+
+function checkYearFormValidity(startYear, endYear) {
     if (startYear > endYear) {
         alert("Start year must be less than or equal to end year.");
-        console.log("Start year must be less than or equal to end year.");
-        return;
+        return false;
+    } else if (startYear == 0 || endYear == 0) {
+        alert("Start year and end year must be set.");
+        return false;
+    } else {
+        return true;
     }
 }
 
-function sendSensorDataForChecking() {
-    const startYear = document.getElementById("startYear").value;
-    const endYear = document.getElementById("endYear").value;
-    // const sensorId = document.getElementById("sensorId").value;
-    const sensorId = "dht22"; //! Should be deleted when the other sensor is added
+function onDisplayImage(e) {
+    let userDisplay = document.getElementById("userDisplay");
+    userDisplay.innerHTML = "";
 
-    checkYearProportion(startYear, endYear);
+    let imgElement = document.createElement("img");
+    imgElement.src = 'data:image/png;base64, ' + e.detail;
+    imgElement.style.maxWidth = "100%"; 
+    
+    userDisplay.appendChild(imgElement);
 }
 
 document.getElementById("submitFormDataButton").addEventListener("click", function () {
-    sendSensorDataForChecking();
+    setFormDataFromHtmlDocument();
+
+    let isYearFormatValid = checkYearFormValidity(startYear, endYear);
+    if (!isYearFormatValid) {
+        return;
+    }
+
+    PYTHON.run("analyze_sensor_wrapper", [startYear, endYear, sensorType, sensorId]);
 });
+
+function onAnalyzeSensorWrapperResult(e) {
+    let userDisplay = document.getElementById("userDisplay");
+    userDisplay.innerHTML += e.detail + '<br>';
+}
+
+function onCleanResultWindow(e) {
+    let userDisplay = document.getElementById("userDisplay");
+    userDisplay.innerHTML = "";
+}
+
+Neutralino.events.on("analyzeSensorWrapperResult", onAnalyzeSensorWrapperResult);
+Neutralino.events.on("cleanResultWindow", onPingResult);
+Neutralino.events.on("displaySensorImage", onDisplayImage);
