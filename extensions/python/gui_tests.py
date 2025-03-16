@@ -89,18 +89,15 @@ def download_file(url: str, file_name: str, extension=None) -> str | None:
     ext = extension
 
     if Path(file_name).exists():
-        # print(f"File {file_name} already exists.")
         ext.sendMessage('analyzeSensorWrapperResult', f"File {file_name} already exists.")
         return file_name
     response = requests.get(url)
     if response.status_code == 200:
         with open(file_name, "wb") as file:
             file.write(response.content)
-        # print(f"File {file_name} downloaded successfully.")
         ext.sendMessage('analyzeSensorWrapperResult', f"File {file_name} downloaded successfully.")
         return file_name
     else:
-        # print(f"Failed to download file {file_name}. Status code: {response.status_code}")
         ext.sendMessage('analyzeSensorWrapperResult', f"Failed to download file {file_name}. Status code: {response.status_code}")
         return None
 
@@ -112,7 +109,6 @@ def extract_archive(file_name: str, extension=None) -> None:
         content = file.read()
     with open(file_name.replace(".gz", ""), "wb") as file:
         file.write(content)
-    # print(f"File extracted successfully.")
     ext.sendMessage('analyzeSensorWrapperResult', f"File {file_name} extracted successfully.")
 
 def check_encoding_of_file(file_name: str) -> str:
@@ -198,8 +194,6 @@ def draw_graph(analysed_data: list[tuple[datetime.datetime, float, float, float,
     base64_image: str = get_image_base64('temperaturanalyse.png')
 
     return base64_image
-    #TODO: return base64 string and convert the image to base64 string before sending it to the extension (function call)
-    # return plt.savefig('temperaturanalyse.png')
 
 
 def analyze_sensor(start_year: int, end_year: int, sensor_type: str, sensor_id: str, debug=False, extension=None):
@@ -231,20 +225,3 @@ def analyze_sensor(start_year: int, end_year: int, sensor_type: str, sensor_id: 
     return analysed_data
 
 # print(analysed_data) ##* Eine CLI-Ansicht der Daten
-
-
-#! To delte later, when the normal function is implemented
-def analyze_sensor_with_messaging(param1, param2, param3, param4, debug=False, extension=None):
-    global ext
-    # Use the provided extension or the global one
-    if extension:
-        ext = extension
-    
-    # Call your analyze_sensor function
-    result = analyze_sensor(param1, param2, param3, param4)
-    
-    # Send the result back to the frontend if we have an extension
-    if ext:
-        ext.sendMessage('analyzeSensorWrapperResult', result)
-    
-    return result

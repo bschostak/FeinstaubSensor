@@ -22,32 +22,14 @@ function checkYearFormValidity(startYear, endYear) {
     }
 }
 
-function onDisplayImage(base64Data) {
+function onDisplayImage(e) {
     let userDisplay = document.getElementById("userDisplay");
-    userDisplay.innerHTML = ""; // Clear the current content
+    userDisplay.innerHTML = "";
 
-    console.log("BASE64test", JSON.stringify(base64Data));
-    
-    
-    // Create an image element
     let imgElement = document.createElement("img");
+    imgElement.src = 'data:image/png;base64, ' + e.detail;
+    imgElement.style.maxWidth = "100%"; 
     
-    // Set the source to the base64 data
-    // Make sure the base64Data includes the proper prefix if it doesn't already
-
-    // if (!base64Data.startsWith('data:image')) {
-    //     imgElement.src = 'data:image/png;base64,' + base64Data;
-    // } else {
-    //     imgElement.src = base64Data;
-    // }
-    
-    imgElement.src = base64Data;
-
-    // imgElement.alt = altText;
-
-    imgElement.style.maxWidth = "100%"; // Make the image responsive
-    
-    // Append the image to the userDisplay div
     userDisplay.appendChild(imgElement);
 }
 
