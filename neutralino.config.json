@@ -12,13 +12,23 @@
   "exportAuthInfo": true,
   "tokenSecurity": "one-time",
   "logging": {
-    "enabled": false,
+    "enabled": true,
     "writeToLogFile": false
   },
+  "nativeAllowList": [
+    "os.getPath",
+    "os.execCommand",
+    "app.*",
+    "filesystem.getStats",
+    "filesystem.createDirectory",
+    "resources.extractFile",
+    "extensions.*",
+    "debug.log"
+  ],
   "globalVariables": {},
   "modes": {
     "window": {
-      "title": "",
+      "title": "FeinstaubSensor",
       "width": 1100,
       "height": 800,
       "minWidth": 500,
@@ -26,7 +36,7 @@
       "fullScreen": false,
       "alwaysOnTop": false,
       "icon": "/resources/icons/appIcon.png",
-      "enableInspector": true,
+      "enableInspector": false,
       "borderless": false,
       "maximize": false,
       "hidden": false,

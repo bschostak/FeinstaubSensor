@@ -23,7 +23,6 @@ def taskLongRun(d):
 
     ext.sendMessage("stopPolling")
 
-
 def ping(d):
     #
     # Send some data to the Neutralino app

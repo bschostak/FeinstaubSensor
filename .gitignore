@@ -172,9 +172,9 @@ cython_debug/
 .vscode/settings.json
 myenv/
 .venv/
-.mypy_cache/
 temperaturanalyse.png
 extensions/python/sensor_data/*.csv
 extensions/python/sensor_data/*.csv.gz
 .tmp/auth_info.json
 sensor_data/*
+bin/
