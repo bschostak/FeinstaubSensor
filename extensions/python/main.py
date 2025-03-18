@@ -52,6 +52,8 @@ def processAppEvent(d):
             ext.runThread(taskLongRun, "taskLongRun", d)
         elif f == "analyze_sensor_wrapper":
             ext.runThread(analyze_sensor_wrapper, "analyze_sensor_wrapper", d)
+        elif f == "delete_sensor_data_files":
+            ext.runThread(delete_sensor_data_files_wrapper, "delete_sensor_data_files_wrapper", d)
 
 
 # * Application Code (wrapper functions)
@@ -63,6 +65,10 @@ def analyze_sensor_wrapper(d):
     base64_data: str = gui_tests.draw_graph(analyzed_sensor_data)
 
     ext.sendMessage("displaySensorImage", base64_data)
+
+
+def delete_sensor_data_files_wrapper(d):
+    gui_tests.delete_sensor_data_files(extension=ext)
 
 
 # Activate extension

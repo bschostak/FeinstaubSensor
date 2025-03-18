@@ -12,6 +12,7 @@ import matplotlib.pyplot as plt
 import gzip
 import chardet
 from pathlib import Path
+import os
 
 #* Extension from Neutralino.js
 ext = None  # Will be set from main.py
@@ -194,6 +195,30 @@ def draw_graph(analysed_data: list[tuple[datetime.datetime, float, float, float,
     base64_image: str = get_image_base64('temperaturanalyse.png')
 
     return base64_image
+
+
+def delete_sensor_data_files(debug=None, extension=None):
+    global ext
+    ext = extension
+    
+    data_dir = Path("./sensor_data")
+    
+    if not data_dir.exists():
+        data_dir.mkdir(parents=True)
+        ext.sendMessage('analyzeSensorWrapperResult', "Created sensor_data directory.")
+        return
+
+    deleted_files_count: int = 0
+    
+    for file_path in data_dir.glob("*"):
+        if file_path.suffix in ['.csv', '.gz'] or file_path.name.endswith('.csv.gz'):
+            try:
+                os.remove(file_path)
+                deleted_files_count += 1
+            except Exception as e:
+                ext.sendMessage('analyzeSensorWrapperResult', f"Error deleting {file_path}: {str(e)}")
+    
+    ext.sendMessage('analyzeSensorWrapperResult', f"Deleted {deleted_files_count} sensor data files.")
 
 
 def analyze_sensor(start_year: int, end_year: int, sensor_type: str, sensor_id: str, debug=False, extension=None):

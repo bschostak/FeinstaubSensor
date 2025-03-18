@@ -44,6 +44,10 @@ document.getElementById("submitFormDataButton").addEventListener("click", functi
     PYTHON.run("analyze_sensor_wrapper", [startYear, endYear, sensorType, sensorId]);
 });
 
+document.getElementById("deleteDownloadedSensorDataButton").addEventListener("click", function () {
+    PYTHON.run("delete_sensor_data_files_wrapper");
+});
+
 function onAnalyzeSensorWrapperResult(e) {
     let userDisplay = document.getElementById("userDisplay");
     userDisplay.innerHTML += e.detail + '<br>';
