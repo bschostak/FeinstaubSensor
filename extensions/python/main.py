@@ -52,7 +52,7 @@ def processAppEvent(d):
             ext.runThread(taskLongRun, "taskLongRun", d)
         elif f == "analyze_sensor_wrapper":
             ext.runThread(analyze_sensor_wrapper, "analyze_sensor_wrapper", d)
-        elif f == "delete_sensor_data_files":
+        elif f == "delete_sensor_data_files_wrapper":
             ext.runThread(delete_sensor_data_files_wrapper, "delete_sensor_data_files_wrapper", d)
 
 

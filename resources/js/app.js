@@ -22,9 +22,13 @@ function checkYearFormValidity(startYear, endYear) {
     }
 }
 
-function onDisplayImage(e) {
+function cleanUserDisplay() {
     let userDisplay = document.getElementById("userDisplay");
     userDisplay.innerHTML = "";
+}
+
+function onDisplayImage(e) {
+    cleanUserDisplay();
 
     let imgElement = document.createElement("img");
     imgElement.src = 'data:image/png;base64, ' + e.detail;
@@ -34,6 +38,8 @@ function onDisplayImage(e) {
 }
 
 document.getElementById("submitFormDataButton").addEventListener("click", function () {
+    cleanUserDisplay();
+
     setFormDataFromHtmlDocument();
 
     let isYearFormatValid = checkYearFormValidity(startYear, endYear);
@@ -45,6 +51,8 @@ document.getElementById("submitFormDataButton").addEventListener("click", functi
 });
 
 document.getElementById("deleteDownloadedSensorDataButton").addEventListener("click", function () {
+    cleanUserDisplay();
+
     PYTHON.run("delete_sensor_data_files_wrapper");
 });
 
@@ -53,11 +61,5 @@ function onAnalyzeSensorWrapperResult(e) {
     userDisplay.innerHTML += e.detail + '<br>';
 }
 
-function onCleanResultWindow(e) {
-    let userDisplay = document.getElementById("userDisplay");
-    userDisplay.innerHTML = "";
-}
-
 Neutralino.events.on("analyzeSensorWrapperResult", onAnalyzeSensorWrapperResult);
-Neutralino.events.on("cleanResultWindow", onPingResult);
 Neutralino.events.on("displaySensorImage", onDisplayImage);
