@@ -49,7 +49,7 @@ document.getElementById("deleteDownloadedSensorDataButton").addEventListener("cl
 function onPopulateYearDropdowns(e) {
     const startYearSelect = document.getElementById('startYear');
     const endYearSelect = document.getElementById('endYear');
-    
+
     startYearSelect.innerHTML = '<option value="" disabled selected>Choose start year</option>';
     endYearSelect.innerHTML = '<option value="" disabled selected>Choose end year</option>';
 
@@ -64,11 +64,11 @@ function onPopulateYearDropdowns(e) {
                 const startOption = document.createElement('option');
                 startOption.value = year;
                 startOption.textContent = year;
-                
+
                 const endOption = document.createElement('option');
                 endOption.value = year;
                 endOption.textContent = year;
-                
+
                 startYearSelect.appendChild(startOption);
                 endYearSelect.appendChild(endOption);
             });
@@ -78,7 +78,7 @@ function onPopulateYearDropdowns(e) {
     } catch (error) {
         console.error('Error processing event data:', error, e);
     }
-    
+
     // Reinitialize Materialize select elements
     M.FormSelect.init(startYearSelect);
     M.FormSelect.init(endYearSelect);
