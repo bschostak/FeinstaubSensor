@@ -37,6 +37,25 @@ function onDisplayImage(e) {
     userDisplay.appendChild(imgElement);
 }
 
+function playNotificationSound() {
+    // if (!audio) {
+    //     audio = new Audio('./resources/sounds/notification.mp3'); // Path to your sound file
+    //     document.getElementById("userDisplay").innerHTML = "Sound is playing...";
+    // }
+    
+    //TODO: make as base64
+    audio = new Audio('/resources/sounds/notification.mp3');
+
+    document.getElementById("userDisplay").innerHTML = "Sound is playing...";
+
+    if (audio.paused || audio.ended) {
+        audio.play();
+    } else {
+        audio.pause();
+        audio.currentTime = 0;
+    }
+}
+
 document.getElementById("submitFormDataButton").addEventListener("click", function () {
     cleanUserDisplay();
 
@@ -54,6 +73,7 @@ document.getElementById("deleteDownloadedSensorDataButton").addEventListener("cl
     cleanUserDisplay();
 
     PYTHON.run("delete_sensor_data_files_wrapper");
+    playNotificationSound();
 });
 
 function onAnalyzeSensorWrapperResult(e) {
