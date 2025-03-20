@@ -42,12 +42,12 @@
       "hidden": false,
       "center": true,
       "useSavedState": false,
-      "resizable": false,
+      "resizable": true,
       "exitProcessOnClose": false
     }
   },
   "cli": {
-    "binaryName": "ext-python",
+    "binaryName": "feinstaubsensor",
     "resourcesPath": "/resources/",
     "extensionsPath": "/extensions/",
     "clientLibrary": "/resources/js/neutralino.js",
@@ -70,16 +70,16 @@
         "universal"
       ],
       "minimumOS": "10.13.0",
-      "appName": "ExtPythonDemo",
-      "appBundleName": "ExtPythonDemo",
-      "appIdentifier": "com.marketmix.ext.python.demo",
+      "appName": "FeinstaubSensor",
+      "appBundleName": "FeinstaubSensor",
+      "appIdentifier": "com.bschostak.FeinstaubSensor",
       "appIcon": "icon.icns"
     },
     "win": {
       "architecture": [
         "x64"
       ],
-      "appName": "ExtPythonDemo.exe"
+      "appName": "FeinstaubSensor.exe"
     }
   }
 }
