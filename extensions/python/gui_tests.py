@@ -5,7 +5,6 @@
 from NeutralinoExtension import *  # noqa: F403
 import datetime
 import requests
-#* WE could fix error with "pip install types-requests" THAT ABOVE
 import csv
 import base64
 import matplotlib.pyplot as plt

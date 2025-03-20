@@ -6,8 +6,8 @@
 
 from NeutralinoExtension import *  # noqa: F403
 import time
-# from app import analyze_sensor, draw_graph
 import gui_tests
+import available_years
 
 DEBUG = True  # Print incoming event messages to the console
 
@@ -69,6 +69,11 @@ def analyze_sensor_wrapper(d):
 
 def delete_sensor_data_files_wrapper(d):
     gui_tests.delete_sensor_data_files(extension=ext)
+
+#TODO: add function call in js.
+def fetch_available_years_wrapper(d):
+    available_years_data = available_years.fetch_available_years()
+    ext.sendMessage("getAvailableYears", available_years_data)
 
 
 # Activate extension
