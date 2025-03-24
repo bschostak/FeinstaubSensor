@@ -1,16 +1,26 @@
+###########################################################################
+#!This file is for testing the GUI and file creation with Python extension.
+###########################################################################
+
+from NeutralinoExtension import *  # noqa: F403
 import datetime
 import requests
 import csv
+import base64
 import matplotlib.pyplot as plt
 import gzip
 import chardet
 from pathlib import Path
+import os
+
+#* Extension from Neutralino.js
+ext = None  # Will be set from main.py
 
 # * Beispiel-URLs:
 # new: https://archive.sensor.community/2024-01-02/2024-01-02_dht22_sensor_113.csv
 # old: https://archive.sensor.community/2023/2023-01-01/2023-01-02_dht22_sensor_113.csv.gz
 
-base_url = "http://archive.sensor.community/"
+base_url :str = "http://archive.sensor.community/"
 
 def parse_file_name(date: datetime.datetime, sensor_type: str, sensor_id: str) -> str:
     if date.year >= 2024:
@@ -32,13 +42,17 @@ def generate_urls(start_year: int, end_year: int, sensor_type: str, sensor_id: s
     # [(sensor_url, file_name)
     # (sensor_url, file_name)]
 
-    for year in range(start_year, end_year + 1):
+    for year in range(int(start_year), int(end_year) + 1):
         for date in get_date_range_year(year):
             file_name = parse_file_name(date, sensor_type, sensor_id)
             sensor_url = parse_url(date, sensor_type, sensor_id)
             urls.append((sensor_url, file_name))
 
     return urls
+
+def generate_single_sensor_url(start_year: int, end_year: int, sensor_type: str, sensor_id: str) -> str:
+    url :str = "sensor.blablabla.de/" + str(start_year) + "-" + str(end_year) + "/" + str(sensor_type) + "/" + str(sensor_id) + ".csv"
+    return url
 
 def get_date_range_year(year: int) -> list[datetime.datetime]:
     """
@@ -70,33 +84,38 @@ def get_date_range(from_time: datetime.datetime, to_time: datetime.datetime) -> 
 
     return date_list
 
-def download_file(url: str, file_name: str) -> str | None:
+def download_file(url: str, file_name: str, extension=None) -> str | None:
+    global ext
+    ext = extension
+
     if Path(file_name).exists():
-        print(f"File {file_name} already exists.")
+        ext.sendMessage('analyzeSensorWrapperResult', f"File {file_name} already exists.")
         return file_name
     response = requests.get(url)
     if response.status_code == 200:
         with open(file_name, "wb") as file:
             file.write(response.content)
-        print(f"File {file_name} downloaded successfully.")
+        ext.sendMessage('analyzeSensorWrapperResult', f"File {file_name} downloaded successfully.")
         return file_name
     else:
-        print(f"Failed to download file {file_name}. Status code: {response.status_code}")
+        ext.sendMessage('analyzeSensorWrapperResult', f"Failed to download file {file_name}. Status code: {response.status_code}")
         return None
 
-def extract_archive(file_name: str) -> None:
+def extract_archive(file_name: str, extension=None) -> None:
+    global ext
+    ext = extension
+
     with gzip.open(file_name, "rb") as file:
         content = file.read()
     with open(file_name.replace(".gz", ""), "wb") as file:
         file.write(content)
-    print(f"File extracted successfully.")
+    ext.sendMessage('analyzeSensorWrapperResult', f"File {file_name} extracted successfully.")
 
 def check_encoding_of_file(file_name: str) -> str:
     with open(file_name, "rb") as file:
         raw_data = file.read()
         result = chardet.detect(raw_data)
-    return result["encoding"]
-
+    return result["encoding"] if result["encoding"] is not None else "utf-8"
 def open_csv_file(file_name: str, file_encoding: str) -> list[tuple[float, datetime.datetime]]:
     with open(file_name, "r", encoding=file_encoding) as file:
         reader = csv.reader(file, dialect='excel')
@@ -143,8 +162,13 @@ def calculate_temperature_difference(data: list[tuple[float, datetime.datetime]]
 
     return temperature_difference
 
+def get_image_base64(image_path):
+    with open(image_path, "rb") as image_file:
+        encoded_string = base64.b64encode(image_file.read()).decode("utf-8")
+    return encoded_string
+
 def draw_graph(analysed_data: list[tuple[datetime.datetime, float, float, float, float]]):
-    dates = [data[0] for data in analysed_data]
+    dates = [data[0].timestamp() for data in analysed_data]
     avg_temps = [data[1] for data in analysed_data]
     high_temps = [data[2] for data in analysed_data]
     low_temps = [data[3] for data in analysed_data]
@@ -164,19 +188,52 @@ def draw_graph(analysed_data: list[tuple[datetime.datetime, float, float, float,
     plt.grid(True)
     plt.xticks(rotation=45)
     plt.tight_layout()
-
+    
     plt.savefig('temperaturanalyse.png')
 
-def analyze_sensor(start_year: int, end_year: int, sensor_type: str, sensor_id: str): #? Warum ist sensor_id ein String?
+    base64_image: str = get_image_base64('temperaturanalyse.png')
+
+    return base64_image
+
+
+def delete_sensor_data_files(debug=None, extension=None):
+    global ext
+    ext = extension
+    
+    data_dir = Path("./sensor_data")
+    
+    if not data_dir.exists():
+        data_dir.mkdir(parents=True)
+        ext.sendMessage('analyzeSensorWrapperResult', "Created sensor_data directory.")
+        return
+
+    deleted_files_count: int = 0
+    
+    for file_path in data_dir.glob("*"):
+        if file_path.suffix in ['.csv', '.gz'] or file_path.name.endswith('.csv.gz'):
+            try:
+                os.remove(file_path)
+                deleted_files_count += 1
+            except Exception as e:
+                ext.sendMessage('analyzeSensorWrapperResult', f"Error deleting {file_path}: {str(e)}")
+    
+    ext.sendMessage('analyzeSensorWrapperResult', f"Deleted {deleted_files_count} sensor data files.")
+
+
+def analyze_sensor(start_year: int, end_year: int, sensor_type: str, sensor_id: str, debug=False, extension=None):
+    global ext
+    ext = extension
+
     analysed_data: list[tuple[datetime.datetime, float, float, float, float]] = []
 
     urls = generate_urls(start_year, end_year, sensor_type, sensor_id)
+
     for url in urls:
-        downloaded_file_name = download_file(url=url[0], file_name=f"./sensor_data/{url[1]}")
+        downloaded_file_name = download_file(url=url[0], file_name=f"./sensor_data/{url[1]}", extension=extension)
         if downloaded_file_name is None:
             continue
         if downloaded_file_name.endswith(".gz"):
-            extract_archive(downloaded_file_name)
+            extract_archive(downloaded_file_name, extension=extension)
             downloaded_file_name = downloaded_file_name.replace(".gz", "")
 
         file_encoding = check_encoding_of_file(downloaded_file_name)
@@ -192,4 +249,3 @@ def analyze_sensor(start_year: int, end_year: int, sensor_type: str, sensor_id: 
     return analysed_data
 
 # print(analysed_data) ##* Eine CLI-Ansicht der Daten
-# TODO: Rebuild Project in Flask

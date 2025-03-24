@@ -6,7 +6,7 @@
 
 from NeutralinoExtension import *  # noqa: F403
 import time
-import gui_tests
+import app
 import available_years
 
 DEBUG = True  # Print incoming event messages to the console
@@ -60,20 +60,44 @@ def processAppEvent(d):
 
 # * Application Code (wrapper functions)
 def analyze_sensor_wrapper(d):
-    analyzed_sensor_data = gui_tests.analyze_sensor(
-        d[0], d[1], d[2], d[3], extension=ext
-    )
+    """
+    Wrapper function to analyze sensor data and generate a graph.
+    
+    Calls app.analyze_sensor with provided data, then draws a graph from the analyzed data.
+    Sends the resulting base64 encoded graph image to the frontend via Neutralino message.
+    
+    :param d: List containing sensor data parameters [param1, param2, param3, param4]
+    """
 
-    base64_image_data: str = gui_tests.draw_graph(analyzed_sensor_data)
+    analyzed_sensor_data = app.analyze_sensor(d[0], d[1], d[2], d[3], extension=ext)
+
+    base64_image_data: str = app.draw_graph(analyzed_sensor_data)
 
     ext.sendMessage("displaySensorImage", base64_image_data)
 
 
 def delete_sensor_data_files_wrapper(d):
-    gui_tests.delete_sensor_data_files(extension=ext)
+    """
+    Wrapper function to delete sensor data files.
+    
+    Calls app.delete_sensor_data_files with the current extension context.
+    
+    :param d: Unused parameter to maintain consistent wrapper function signature
+    """
+    
+    app.delete_sensor_data_files(extension=ext)
 
 
 def fetch_available_years_wrapper(d):
+    """
+    Wrapper function to fetch and populate available years data.
+    
+    Calls available_years.fetch_available_years() to retrieve available years,
+    then sends the data to the frontend to populate year dropdown menus.
+    
+    :param d: Unused parameter to maintain consistent wrapper function signature
+    """
+    
     available_years_data = available_years.fetch_available_years()
     ext.sendMessage("populateYearDropdowns", available_years_data)
 
