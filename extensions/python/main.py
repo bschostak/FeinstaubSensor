@@ -6,8 +6,8 @@
 
 from NeutralinoExtension import *  # noqa: F403
 import time
-# from app import analyze_sensor, draw_graph
 import gui_tests
+import available_years
 
 DEBUG = True  # Print incoming event messages to the console
 
@@ -54,6 +54,8 @@ def processAppEvent(d):
             ext.runThread(analyze_sensor_wrapper, "analyze_sensor_wrapper", d)
         elif f == "delete_sensor_data_files_wrapper":
             ext.runThread(delete_sensor_data_files_wrapper, "delete_sensor_data_files_wrapper", d)
+        elif f == "fetch_available_years_wrapper":
+            ext.runThread(fetch_available_years_wrapper, "fetch_available_years_wrapper", d)
 
 
 # * Application Code (wrapper functions)
@@ -62,13 +64,18 @@ def analyze_sensor_wrapper(d):
         d[0], d[1], d[2], d[3], extension=ext
     )
 
-    base64_data: str = gui_tests.draw_graph(analyzed_sensor_data)
+    base64_image_data: str = gui_tests.draw_graph(analyzed_sensor_data)
 
-    ext.sendMessage("displaySensorImage", base64_data)
+    ext.sendMessage("displaySensorImage", base64_image_data)
 
 
 def delete_sensor_data_files_wrapper(d):
     gui_tests.delete_sensor_data_files(extension=ext)
+
+
+def fetch_available_years_wrapper(d):
+    available_years_data = available_years.fetch_available_years()
+    ext.sendMessage("populateYearDropdowns", available_years_data)
 
 
 # Activate extension
