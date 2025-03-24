@@ -27,16 +27,6 @@ function cleanUserDisplay() {
     userDisplay.innerHTML = "";
 }
 
-function onDisplayImage(e) {
-    cleanUserDisplay();
-
-    let imgElement = document.createElement("img");
-    imgElement.src = 'data:image/png;base64, ' + e.detail;
-    imgElement.style.maxWidth = "100%"; 
-    
-    userDisplay.appendChild(imgElement);
-}
-
 document.getElementById("submitFormDataButton").addEventListener("click", function () {
     cleanUserDisplay();
 
@@ -56,10 +46,61 @@ document.getElementById("deleteDownloadedSensorDataButton").addEventListener("cl
     PYTHON.run("delete_sensor_data_files_wrapper");
 });
 
+function onPopulateYearDropdowns(e) {
+    const startYearSelect = document.getElementById('startYear');
+    const endYearSelect = document.getElementById('endYear');
+    
+    startYearSelect.innerHTML = '<option value="" disabled selected>Choose start year</option>';
+    endYearSelect.innerHTML = '<option value="" disabled selected>Choose end year</option>';
+
+    let years;
+    try {
+        const parsedDetail = JSON.parse(e.detail);
+        years = Array.isArray(parsedDetail) ? parsedDetail : null;
+
+        // Probably should be refactored...
+        if (Array.isArray(years)) {
+            years.forEach(year => {
+                const startOption = document.createElement('option');
+                startOption.value = year;
+                startOption.textContent = year;
+                
+                const endOption = document.createElement('option');
+                endOption.value = year;
+                endOption.textContent = year;
+                
+                startYearSelect.appendChild(startOption);
+                endYearSelect.appendChild(endOption);
+            });
+        } else {
+            console.error('Could not find years array in event data:', e);
+        }
+    } catch (error) {
+        console.error('Error processing event data:', error, e);
+    }
+    
+    // Reinitialize Materialize select elements
+    M.FormSelect.init(startYearSelect);
+    M.FormSelect.init(endYearSelect);
+}
+
 function onAnalyzeSensorWrapperResult(e) {
     let userDisplay = document.getElementById("userDisplay");
     userDisplay.innerHTML += e.detail + '<br>';
 }
 
+function onDisplayImage(e) {
+    cleanUserDisplay();
+
+    let imgElement = document.createElement("img");
+    imgElement.src = 'data:image/png;base64, ' + e.detail;
+    imgElement.style.maxWidth = "100%"; 
+    
+    userDisplay.appendChild(imgElement);
+}
+
+Neutralino.events.on("populateYearDropdowns", onPopulateYearDropdowns);
 Neutralino.events.on("analyzeSensorWrapperResult", onAnalyzeSensorWrapperResult);
 Neutralino.events.on("displaySensorImage", onDisplayImage);
+
+PYTHON.run("fetch_available_years_wrapper");
