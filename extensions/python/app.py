@@ -3,9 +3,9 @@ import datetime
 from pathlib import Path
 
 from modules.url_generator import generate_urls
-from modules.file_operations import download_file, extract_archive, check_encoding_of_file, open_csv_file, delete_sensor_data_files
+from modules.file_operations import download_file, extract_archive, check_encoding_of_file, open_csv_file, delete_sensor_data_files  # noqa: F401
 from modules.data_analysis import calculate_average_temperature, calculate_max_temperature, calculate_min_temperature, calculate_temperature_difference
-from modules.visualization import draw_graph
+from modules.visualization import draw_graph  # noqa: F401
 
 #* Extension from Neutralino.js
 ext = None  # Will be set from main.py
@@ -16,8 +16,8 @@ def analyze_sensor(start_year: int, end_year: int, sensor_type: str, sensor_id: 
 
     analysed_data: list[tuple[datetime.datetime, float, float, float, float]] = []
 
-    # Create sensor_data directory if it doesn't exist
     data_dir = Path("./sensor_data")
+
     if not data_dir.exists():
         data_dir.mkdir(parents=True)
         

@@ -104,5 +104,5 @@ def fetch_available_years_wrapper(d):
 
 # Activate extension
 #
-ext = NeutralinoExtension(DEBUG)
+ext = NeutralinoExtension(DEBUG)  # noqa: F405
 ext.run(processAppEvent)
