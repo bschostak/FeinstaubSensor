@@ -59,7 +59,7 @@ def processAppEvent(d):
 
 
 # * Application Code (wrapper functions)
-def analyze_sensor_wrapper(d):
+def analyze_sensor_wrapper(d) -> None:
     """
     Wrapper function to analyze sensor data and generate a graph.
     
@@ -76,7 +76,7 @@ def analyze_sensor_wrapper(d):
     ext.sendMessage("displaySensorImage", base64_image_data)
 
 
-def delete_sensor_data_files_wrapper(d):
+def delete_sensor_data_files_wrapper(d) -> None:
     """
     Wrapper function to delete sensor data files.
     
@@ -88,7 +88,7 @@ def delete_sensor_data_files_wrapper(d):
     app.delete_sensor_data_files(extension=ext)
 
 
-def fetch_available_years_wrapper(d):
+def fetch_available_years_wrapper(d) -> None:
     """
     Wrapper function to fetch and populate available years data.
     

@@ -2,13 +2,13 @@ import matplotlib.pyplot as plt
 import base64
 import datetime
 
-def get_image_base64(image_path):
+def get_image_base64(image_path) -> str:
     with open(image_path, "rb") as image_file:
-        encoded_string = base64.b64encode(image_file.read()).decode("utf-8")
+        encoded_string: str = base64.b64encode(image_file.read()).decode("utf-8")
     return encoded_string
 
 
-def draw_graph(analysed_data: list[tuple[datetime.datetime, float, float, float, float]]):
+def draw_graph(analysed_data: list[tuple[datetime.datetime, float, float, float, float]]) -> str:
     dates = [data[0].timestamp() for data in analysed_data]
     avg_temps = [data[1] for data in analysed_data]
     high_temps = [data[2] for data in analysed_data]

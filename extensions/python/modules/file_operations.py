@@ -56,7 +56,7 @@ def open_csv_file(file_name: str, file_encoding: str) -> list[tuple[float, datet
 
     return extracted_data
 
-def delete_sensor_data_files(debug=None, extension=None):
+def delete_sensor_data_files(debug=None, extension=None) -> None:
     global ext
     ext = extension
     
