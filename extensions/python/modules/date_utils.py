@@ -2,9 +2,18 @@ import datetime
 
 def get_date_range_year(year: int) -> list[datetime.datetime]:
     """
-    Gibt eine Liste von Datumsobjekten zurück, die alle Tage des angegebenen Jahres enthalten.
-    Falls das Jahr das aktuelle Jahr ist, wird der letzte Tag durch den heutigen Tag ersetzt.
+    Generate a list of datetime objects for all dates in a given year.
+    
+    If the specified year is the current year, the last date will be the current date.
+    Otherwise, the last date will be December 31st of the specified year.
+    
+    Args:
+        year (int): The year for which to generate the date range.
+    
+    Returns:
+        list[datetime.datetime]: A list of datetime objects representing all dates in the year.
     """
+
     first_day = datetime.datetime(year=year, month=1, day=1)
     last_day = datetime.datetime(year=year, month=12, day=31)
 
@@ -14,8 +23,16 @@ def get_date_range_year(year: int) -> list[datetime.datetime]:
 
 def get_date_range(from_time: datetime.datetime, to_time: datetime.datetime) -> list[datetime.datetime]:
     """
-    Gibt eine Liste aller Daten zwischen zwei gegebenen Datumsobjekten zurück.
+    Generate a list of datetime objects between two given datetime points.
+    
+    Args:
+        from_time (datetime.datetime): The starting datetime.
+        to_time (datetime.datetime): The ending datetime.
+    
+    Returns:
+        list[datetime.datetime]: A list of datetime objects representing each day between from_time and to_time, inclusive.
     """
+    
     date_list: list[datetime.datetime] = []
     date_difference = to_time - from_time
     days_difference = date_difference.days

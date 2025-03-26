@@ -8,6 +8,7 @@ def calculate_average_temperature(data: list[tuple[float, datetime.datetime]]) -
 
     return total_temperature / len(data)
 
+
 def calculate_max_temperature(data: list[tuple[float, datetime.datetime]]) -> float:
     highest_temperature = data[0][0]
 
@@ -17,6 +18,7 @@ def calculate_max_temperature(data: list[tuple[float, datetime.datetime]]) -> fl
 
     return highest_temperature
 
+
 def calculate_min_temperature(data: list[tuple[float, datetime.datetime]]) -> float:
     lowest_temperature = data[0][0]
 
@@ -25,6 +27,7 @@ def calculate_min_temperature(data: list[tuple[float, datetime.datetime]]) -> fl
             lowest_temperature = row[0]
 
     return lowest_temperature
+
 
 def calculate_temperature_difference(data: list[tuple[float, datetime.datetime]]) -> float:
     temperature_difference = calculate_max_temperature(data) - calculate_min_temperature(data)

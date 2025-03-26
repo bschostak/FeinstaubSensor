@@ -9,6 +9,7 @@ from pathlib import Path
 #* Extension from Neutralino.js
 ext = None  # Will be set from main.py
 
+
 def download_file(url: str, file_name: str, extension=None) -> str | None:
     global ext
     ext = extension
@@ -26,6 +27,7 @@ def download_file(url: str, file_name: str, extension=None) -> str | None:
         ext.sendMessage('analyzeSensorWrapperResult', f"Failed to download file {file_name}. Status code: {response.status_code}")
         return None
 
+
 def extract_archive(file_name: str, extension=None) -> None:
     global ext
     ext = extension
@@ -36,12 +38,30 @@ def extract_archive(file_name: str, extension=None) -> None:
         file.write(content)
     ext.sendMessage('analyzeSensorWrapperResult', f"File {file_name} extracted successfully.")
 
+
 def check_encoding_of_file(file_name: str) -> str:
     with open(file_name, "rb") as file:
         raw_data = file.read()
         result = chardet.detect(raw_data)
     return result["encoding"] if result["encoding"] is not None else "utf-8"
-def open_csv_file(file_name: str, file_encoding: str) -> list[tuple[float, datetime.datetime]]:
+
+
+def open_and_parse_csv_file(file_name: str, file_encoding: str) -> list[tuple[float, datetime.datetime]]:
+    """
+    Open and parse a CSV file containing sensor data.
+    
+    Reads a CSV file with semicolon-separated values, extracts temperature and timestamp
+    from specific columns, and returns a list of temperature-timestamp tuples.
+    
+    Args:
+        file_name (str): Path to the CSV file to be opened.
+        file_encoding (str): Encoding of the CSV file.
+    
+    Returns:
+        list[tuple[float, datetime.datetime]]: A list of tuples containing temperature 
+        and corresponding timestamp, with the header row removed.
+    """
+
     with open(file_name, "r", encoding=file_encoding) as file:
         reader = csv.reader(file, dialect='excel')
         data = list(reader)
@@ -55,6 +75,7 @@ def open_csv_file(file_name: str, file_encoding: str) -> list[tuple[float, datet
         extracted_data.append((temperature, timestamp))
 
     return extracted_data
+
 
 def delete_sensor_data_files(debug=None, extension=None) -> None:
     global ext

@@ -22,7 +22,7 @@ def parse_url(date: datetime.datetime, sensor_type: str, sensor_id: str) -> str:
 def generate_urls(start_year: int, end_year: int, sensor_type: str, sensor_id: str) -> list[tuple[str, str]]:
     urls: list[tuple[str, str]] = []
 
-    #* So sieht tulpe aus:
+    #* So sieht tuple aus:
     # list:
     # [(sensor_url, file_name)
     # (sensor_url, file_name)]
@@ -35,6 +35,7 @@ def generate_urls(start_year: int, end_year: int, sensor_type: str, sensor_id: s
 
     return urls
 
+#! Deprecated
 def generate_single_sensor_url(start_year: int, end_year: int, sensor_type: str, sensor_id: str) -> str:
     url :str = "sensor.blablabla.de/" + str(start_year) + "-" + str(end_year) + "/" + str(sensor_type) + "/" + str(sensor_id) + ".csv"
     return url

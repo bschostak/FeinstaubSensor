@@ -9,6 +9,7 @@ def get_image_base64(image_path) -> str:
 
 
 def draw_graph(analysed_data: list[tuple[datetime.datetime, float, float, float, float]]) -> str:
+    #d.strftime("%d/%m/%y") //TODO: Add it later.
     dates = [data[0].timestamp() for data in analysed_data]
     avg_temps = [data[1] for data in analysed_data]
     high_temps = [data[2] for data in analysed_data]
@@ -22,9 +23,9 @@ def draw_graph(analysed_data: list[tuple[datetime.datetime, float, float, float,
     plt.plot(dates, low_temps, label='min', color='green')
     plt.plot(dates, temp_diffs, label='diff', color='orange')
 
-    plt.xlabel('Datum')
-    plt.ylabel('Temperatur (°C)')
-    plt.title('Temperaturanalyse')
+    plt.xlabel('Date')
+    plt.ylabel('Temperature (°C)')
+    plt.title('Temperature Analysis')
     plt.legend()
     plt.grid(True)
     plt.xticks(rotation=45)
