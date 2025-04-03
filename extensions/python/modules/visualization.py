@@ -31,6 +31,7 @@ def draw_graph(analysed_data: list[tuple[datetime.datetime, float, float, float,
     plt.xticks(rotation=45)
     plt.tight_layout()
     
+    #TODO: Save the plot as an SVG file, when it is not clearly visible, use plotly html embed.
     plt.savefig('temperaturanalyse.png')
 
     base64_image: str = get_image_base64('temperaturanalyse.png')
