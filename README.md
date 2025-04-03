@@ -17,7 +17,7 @@ This is illustrated with a graphical diagram.
 
 - NeutralinoJS
 - Python
-- Matplitlib
+- Matplotlib
 - MaterlilizeCSS
 - BeautifulSoup
 - Requests
