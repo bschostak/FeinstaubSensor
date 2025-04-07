@@ -4,6 +4,9 @@ let endYear = 0;
 let sensorType = "dht22"; //! Should be deleted when the other sensor is added
 let sensorId = "4594"; //TODO: Make error message when sensorId is not set
 
+const notificationSound = new Audio("../assets/notification.mp3");
+notificationSound.preload = "auto";
+
 function setFormDataFromHtmlDocument() {
     startYear = document.getElementById("startYear").value;
     endYear = document.getElementById("endYear").value;
@@ -27,6 +30,24 @@ function cleanUserDisplay() {
     userDisplay.innerHTML = "";
 }
 
+function playNotificationSound() {
+
+    if (!document.querySelector('input[class="notification_sound"]').checked) {
+        return;
+    }
+
+    const playPromise = notificationSound.play();
+
+    if (playPromise !== undefined) {
+        playPromise
+            .then(() => {
+            })
+            .catch(error => {
+                console.log('Audio playback was prevented due to browser autoplay policy. This is normal before user interaction.');
+            });
+    }
+}
+
 document.getElementById("submitFormDataButton").addEventListener("click", function () {
     cleanUserDisplay();
 
@@ -42,6 +63,8 @@ document.getElementById("submitFormDataButton").addEventListener("click", functi
 
 document.getElementById("deleteDownloadedSensorDataButton").addEventListener("click", function () {
     cleanUserDisplay();
+
+    playNotificationSound();
 
     PYTHON.run("delete_sensor_data_files_wrapper");
 });
@@ -118,6 +141,9 @@ function onDisplayHtml(e) {
         userDisplay.innerHTML = "Could not display html content.";
         return;
     }
+
+    playNotificationSound();
+
     userDisplay.appendChild(iframe);
 }
 

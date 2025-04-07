@@ -26,6 +26,10 @@
       e = document.getElementById("link-quit");
       e.style.display = "block";
     }
+
+    function checkNotificationSwitch() {
+      return document.querySelector('.notification_switch input[type="checkbox"]').checked;
+    }
   </script>
 
   <script type="text/javascript" src="js/materialize.min.js"></script>
@@ -42,7 +46,7 @@
         <div class="switch">
           <label>
             Off
-            <input type="checkbox" checked>
+            <input type="checkbox" class="notification_sound" checked>
             <span class="lever grey"></span>
             On
           </label>
