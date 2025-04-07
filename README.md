@@ -17,7 +17,7 @@ This is illustrated with a graphical diagram.
 
 - NeutralinoJS
 - Python
-- Matplotlib
+- Plotly
 - MaterlilizeCSS
 - BeautifulSoup
 - Requests
@@ -30,7 +30,8 @@ This is illustrated with a graphical diagram.
 ## Requirements:
 
 - request
-- matplotlib
+- plotly
+- kaleido
 - chardet
 - websocket-client
 - websockets
