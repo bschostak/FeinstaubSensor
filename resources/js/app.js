@@ -14,7 +14,7 @@ function checkYearFormValidity(startYear, endYear) {
     if (startYear > endYear) {
         alert("Start year must be less than or equal to end year.");
         return false;
-    } else if (startYear == 0 || endYear == 0) {
+    } else if (startYear === 0 || endYear === 0) {
         alert("Start year and end year must be set.");
         return false;
     } else {
