@@ -71,10 +71,9 @@ def analyze_sensor_wrapper(d) -> None:
 
     analyzed_sensor_data = app.analyze_sensor(d[0], d[1], d[2], d[3], extension=ext)
 
-    base64_image_data: str = app.draw_graph(analyzed_sensor_data)
+    base64_html_data: str = app.draw_interactive_graph(analyzed_sensor_data)
 
-    ext.sendMessage("displaySensorImage", base64_image_data)
-
+    ext.sendMessage("displaySensorHtml", base64_html_data)
 
 def delete_sensor_data_files_wrapper(d) -> None:
     """

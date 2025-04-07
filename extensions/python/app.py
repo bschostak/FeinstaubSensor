@@ -5,7 +5,7 @@ from pathlib import Path
 from modules.url_generator import generate_urls
 from modules.file_operations import download_file, extract_archive, check_encoding_of_file, open_and_parse_csv_file, delete_sensor_data_files  # noqa: F401
 from modules.data_analysis import calculate_average_temperature, calculate_max_temperature, calculate_min_temperature, calculate_temperature_difference
-from modules.visualization import draw_graph  # noqa: F401
+from modules.visualization import draw_interactive_graph  # noqa: F401
 
 #* Extension from Neutralino.js
 ext = None  # Will be set from main.py

@@ -178,3 +178,4 @@ extensions/python/sensor_data/*.csv.gz
 .tmp/auth_info.json
 sensor_data/*
 bin/
+/temperaturanalyse.html

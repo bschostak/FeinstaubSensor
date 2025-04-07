@@ -89,18 +89,40 @@ function onAnalyzeSensorWrapperResult(e) {
     userDisplay.innerHTML += e.detail + '<br>';
 }
 
-function onDisplayImage(e) {
+function isBase64(str) {
+    try {
+        return btoa(atob(str)) === str;
+    } catch (err) {
+        return false;
+    }
+}
+
+function onDisplayHtml(e) {
+
+    let userDisplay = document.getElementById("userDisplay");
+
     cleanUserDisplay();
 
-    let imgElement = document.createElement("img");
-    imgElement.src = 'data:image/png;base64, ' + e.detail;
-    imgElement.style.maxWidth = "100%"; 
-    
-    userDisplay.appendChild(imgElement);
+    const htmlContent = e.detail;
+
+    const iframe = document.createElement('iframe');
+    iframe.style.width = '100%';
+    iframe.style.height = '100%';
+    iframe.style.border = 'none';
+
+    if (typeof htmlContent === 'string' &&
+        (htmlContent.startsWith('data:text/html;base64,') || isBase64(htmlContent))) {
+
+        iframe.src = `data:text/html;base64,${htmlContent}`;
+    } else {
+        userDisplay.innerHTML = "Could not display html content.";
+        return;
+    }
+    userDisplay.appendChild(iframe);
 }
 
 Neutralino.events.on("populateYearDropdowns", onPopulateYearDropdowns);
 Neutralino.events.on("analyzeSensorWrapperResult", onAnalyzeSensorWrapperResult);
-Neutralino.events.on("displaySensorImage", onDisplayImage);
+Neutralino.events.on("displaySensorHtml", onDisplayHtml);
 
 PYTHON.run("fetch_available_years_wrapper");
