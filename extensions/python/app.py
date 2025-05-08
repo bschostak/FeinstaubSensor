@@ -63,8 +63,16 @@ def analyze_sensor(start_year: int, end_year: int, sensor_type: str, sensor_id: 
         csv_parsed_data: list[tuple[float, datetime.datetime]] = open_and_parse_csv_file(downloaded_file_name, file_encoding)
         
         # Ensure processing only continues if stop_event is not set
+        # if stop_event.is_set():
+        #     ext.sendMessage('analyzeSensorWrapperResult', "Processing cancelled after download.")
+        #     break
+        
+        # NOTE: Tryng to fix error with "ext"
         if stop_event.is_set():
-            ext.sendMessage('analyzeSensorWrapperResult', "Processing cancelled after download.")
+            if ext is not None:
+                ext.sendMessage('analyzeSensorWrapperResult', "Processing cancelled after download.")
+        else:
+            print("Error: 'ext' is not initialized.") 
             break
         
         average: float = calculate_average_temperature(csv_parsed_data)
@@ -75,29 +83,5 @@ def analyze_sensor(start_year: int, end_year: int, sensor_type: str, sensor_id: 
 
         analysed_data.append((measurement_date, average, max_temperature, min_temperature, temperature_diff))
 
-
-    # NOTE: Old implementation
-    # for url in urls:
-    #     # TODO: Implement this block below
-    #     if stop_event.is_set():  # Stop processing if the cancellation event is triggered
-    #         ext.sendMessage('analyzeSensorWrapperResult', "Download process cancelled.")
-    #         break
-    #
-    #     downloaded_file_name: str | None = download_file(url=url[0], file_name=f"./sensor_data/{url[1]}", extension=extension)
-    #     if downloaded_file_name is None:
-    #         continue
-    #     if downloaded_file_name.endswith(".gz"):
-    #         extract_archive(downloaded_file_name, extension=extension)
-    #         downloaded_file_name = downloaded_file_name.replace(".gz", "")
-    #
-    #     file_encoding: str = check_encoding_of_file(downloaded_file_name)
-    #     csv_parsed_data: list[tuple[float, datetime.datetime]] = open_and_parse_csv_file(downloaded_file_name, file_encoding)
-    #     average: float = calculate_average_temperature(csv_parsed_data)
-    #     max_temperature: float = calculate_max_temperature(csv_parsed_data)
-    #     min_temperature: float = calculate_min_temperature(csv_parsed_data)
-    #     temperature_diff: float = calculate_temperature_difference(csv_parsed_data)
-    #     measurement_date = csv_parsed_data[0][1]
-    #
-    #     analysed_data.append((measurement_date, average, max_temperature, min_temperature, temperature_diff))
 
     return analysed_data
