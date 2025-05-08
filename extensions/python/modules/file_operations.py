@@ -1,5 +1,4 @@
 import requests
-import threading
 import gzip
 import chardet
 import csv
@@ -11,26 +10,6 @@ from pathlib import Path
 ext = None  # Will be set from main.py
 
 
-stop_event = threading.Event()
-
-
-def stop_download():
-    """
-    Stops the ongoing download process.
-
-    This function sets the global stop_event flag, signaling any active download 
-    threads to halt their execution. It should be called when the user wishes 
-    to cancel a file download before completion.
-
-    Usage:
-        stop_download()  # Cancels the download process
-
-    Returns:
-        None
-    """
-    stop_event.set()
-
-
 def download_file(url: str, file_name: str, extension=None) -> str | None:
     global ext
     ext = extension
@@ -38,41 +17,15 @@ def download_file(url: str, file_name: str, extension=None) -> str | None:
     if Path(file_name).exists():
         ext.sendMessage('analyzeSensorWrapperResult', f"File {file_name} already exists.")
         return file_name
-
-    response = requests.get(url, stream=True)
+    response = requests.get(url)
     if response.status_code == 200:
         with open(file_name, "wb") as file:
-            for chunk in response.iter_content(chunk_size=8192):  # Download in chunks
-                if stop_event.is_set():  # Stop if the flag is set
-                    ext.sendMessage('analyzeSensorWrapperResult', "Download cancelled.")
-                    return None
-                file.write(chunk)
-
+            file.write(response.content)
         ext.sendMessage('analyzeSensorWrapperResult', f"File {file_name} downloaded successfully.")
         return file_name
     else:
         ext.sendMessage('analyzeSensorWrapperResult', f"Failed to download file {file_name}. Status code: {response.status_code}")
         return None
-
-
-#TODO: Delete the old implementation.
-
-# def download_file(url: str, file_name: str, extension=None) -> str | None:
-#     global ext
-#     ext = extension
-#
-#     if Path(file_name).exists():
-#         ext.sendMessage('analyzeSensorWrapperResult', f"File {file_name} already exists.")
-#         return file_name
-#     response = requests.get(url)
-#     if response.status_code == 200:
-#         with open(file_name, "wb") as file:
-#             file.write(response.content)
-#         ext.sendMessage('analyzeSensorWrapperResult', f"File {file_name} downloaded successfully.")
-#         return file_name
-#     else:
-#         ext.sendMessage('analyzeSensorWrapperResult', f"Failed to download file {file_name}. Status code: {response.status_code}")
-#         return None
 
 
 def extract_archive(file_name: str, extension=None) -> None:

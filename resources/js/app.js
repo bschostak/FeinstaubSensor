@@ -69,6 +69,11 @@ document.getElementById("deleteDownloadedSensorDataButton").addEventListener("cl
     PYTHON.run("delete_sensor_data_files_wrapper");
 });
 
+document.getElementById("cancelDownloadDataButton").addEventListener("click", function () {
+
+    PYTHON.run("stop_download_wrapper");
+});
+
 function onPopulateYearDropdowns(e) {
     const startYearSelect = document.getElementById('startYear');
     const endYearSelect = document.getElementById('endYear');

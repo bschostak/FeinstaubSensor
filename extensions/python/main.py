@@ -54,6 +54,8 @@ def processAppEvent(d):
             ext.runThread(analyze_sensor_wrapper, "analyze_sensor_wrapper", d)
         elif f == "delete_sensor_data_files_wrapper":
             ext.runThread(delete_sensor_data_files_wrapper, "delete_sensor_data_files_wrapper", d)
+        elif f == "stop_download_wrapper":
+            ext.runThread(stop_download_wrapper, "stop_download_wrapper", d)
         elif f == "fetch_available_years_wrapper":
             ext.runThread(fetch_available_years_wrapper, "fetch_available_years_wrapper", d)
 
@@ -75,6 +77,7 @@ def analyze_sensor_wrapper(d) -> None:
 
     ext.sendMessage("displaySensorHtml", base64_html_data)
 
+
 def delete_sensor_data_files_wrapper(d) -> None:
     """
     Wrapper function to delete sensor data files.
@@ -85,6 +88,21 @@ def delete_sensor_data_files_wrapper(d) -> None:
     """
     
     app.delete_sensor_data_files(extension=ext)
+
+
+def stop_download_wrapper(d) -> None:
+    """
+    Wrapper function to trigger the download cancellation.
+
+    This function calls `app.stop_download()` to stop an ongoing download process.
+    It is intended to be used as a callback or intermediary function for UI elements 
+    such as buttons or event handlers.
+
+    :param d: Unused parameter to maintain consistent wrapper function signature
+    """
+
+    ext.sendMessage('analyzeSensorWrapperResult', "Test of the cancel button.")
+    app.stop_download()
 
 
 def fetch_available_years_wrapper(d) -> None:
