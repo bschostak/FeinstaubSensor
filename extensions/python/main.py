@@ -101,7 +101,6 @@ def stop_download_wrapper(d) -> None:
     :param d: Unused parameter to maintain consistent wrapper function signature
     """
 
-    ext.sendMessage('analyzeSensorWrapperResult', "Test of the cancel button.")
     app.stop_download()
 
 

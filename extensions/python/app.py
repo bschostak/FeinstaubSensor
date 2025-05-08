@@ -31,6 +31,7 @@ def stop_download() -> None:
     stop_event.set()
 
 # FIX: The sensor file will be not downloaded with this implementaion.
+# The event need to be setted to off, wehn we click on the "send" button.
 def analyze_sensor(start_year: int, end_year: int, sensor_type: str, sensor_id: str, debug=False, extension=None):
     global ext
     ext = extension
