@@ -24,6 +24,11 @@ def analyze_sensor(start_year: int, end_year: int, sensor_type: str, sensor_id: 
     urls: list[tuple[str, str]] = generate_urls(start_year, end_year, sensor_type, sensor_id)
 
     for url in urls:
+        # TODO: Implement this block below
+        if stop_event.is_set():  # Stop processing if the cancellation event is triggered
+            ext.sendMessage('analyzeSensorWrapperResult', "Download process cancelled.")
+            break
+
         downloaded_file_name: str | None = download_file(url=url[0], file_name=f"./sensor_data/{url[1]}", extension=extension)
         if downloaded_file_name is None:
             continue
