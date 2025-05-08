@@ -73,6 +73,9 @@ def analyze_sensor_wrapper(d) -> None:
 
     analyzed_sensor_data = app.analyze_sensor(d[0], d[1], d[2], d[3], extension=ext)
 
+    if analyzed_sensor_data == 0:
+        return
+
     base64_html_data: str = app.draw_interactive_graph(analyzed_sensor_data)
 
     ext.sendMessage("displaySensorHtml", base64_html_data)

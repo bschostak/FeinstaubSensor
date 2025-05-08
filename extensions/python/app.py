@@ -9,7 +9,8 @@ from modules.data_analysis import calculate_average_temperature, calculate_max_t
 from modules.visualization import draw_interactive_graph  # noqa: F401
 
 #* Extension from Neutralino.js
-ext = None  # Will be set from main.py
+# NOTE: Delete line below, when it is not nore needed.
+# ext = None  # Will be set from main.py
 
 
 stop_event = threading.Event()
@@ -30,10 +31,14 @@ def stop_download() -> None:
     """
     stop_event.set()
 
-# FIX: The sensor file will be not downloaded with this implementaion.
-# The event need to be setted to off, wehn we click on the "send" button.
+# def analyze_sensor(start_year: int, end_year: int, sensor_type: str, sensor_id: str, debug=False, extension=None):
+#     global ext
+#     ext = extension
+#     NOTE: IMP 1:
 def analyze_sensor(start_year: int, end_year: int, sensor_type: str, sensor_id: str, debug=False, extension=None):
-    global ext
+    if extension is None:
+        raise ValueError("Extension cannot be None")
+
     ext = extension
 
     analysed_data: list[tuple[datetime.datetime, float, float, float, float]] = []
@@ -45,10 +50,12 @@ def analyze_sensor(start_year: int, end_year: int, sensor_type: str, sensor_id: 
         
     urls: list[tuple[str, str]] = generate_urls(start_year, end_year, sensor_type, sensor_id)
 
+    stop_event.clear()
+
     for url in urls:
-        if stop_event.is_set():  # Stop processing if the cancellation event is triggered
+        if stop_event.is_set():
             ext.sendMessage('analyzeSensorWrapperResult', "Download process cancelled.")
-            break
+            return 0
 
         downloaded_file_name: str | None = download_file(url=url[0], file_name=f"./sensor_data/{url[1]}", extension=extension)
         
@@ -62,19 +69,6 @@ def analyze_sensor(start_year: int, end_year: int, sensor_type: str, sensor_id: 
         file_encoding: str = check_encoding_of_file(downloaded_file_name)
         csv_parsed_data: list[tuple[float, datetime.datetime]] = open_and_parse_csv_file(downloaded_file_name, file_encoding)
         
-        # Ensure processing only continues if stop_event is not set
-        # if stop_event.is_set():
-        #     ext.sendMessage('analyzeSensorWrapperResult', "Processing cancelled after download.")
-        #     break
-        
-        # NOTE: Tryng to fix error with "ext"
-        if stop_event.is_set():
-            if ext is not None:
-                ext.sendMessage('analyzeSensorWrapperResult', "Processing cancelled after download.")
-        else:
-            print("Error: 'ext' is not initialized.") 
-            break
-        
         average: float = calculate_average_temperature(csv_parsed_data)
         max_temperature: float = calculate_max_temperature(csv_parsed_data)
         min_temperature: float = calculate_min_temperature(csv_parsed_data)
@@ -82,6 +76,5 @@ def analyze_sensor(start_year: int, end_year: int, sensor_type: str, sensor_id: 
         measurement_date = csv_parsed_data[0][1]
 
         analysed_data.append((measurement_date, average, max_temperature, min_temperature, temperature_diff))
-
 
     return analysed_data
