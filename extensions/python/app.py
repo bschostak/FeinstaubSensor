@@ -31,10 +31,23 @@ def stop_download() -> None:
     """
     stop_event.set()
 
+def process_archive(file_name: str, extension=None):
+    if file_name.endswith(".gz"):
+        extracted_file: str = extract_archive(file_name, extension=extension)
+        return extracted_file.replace(".gz", "")
+    return file_name
+
+
+def process_sensor_data(file_name):
+    file_encoding: str = check_encoding_of_file(file_name)
+    return open_and_parse_csv_file(file_name, file_encoding)
+
+# NOTE: Old implementation
 # def analyze_sensor(start_year: int, end_year: int, sensor_type: str, sensor_id: str, debug=False, extension=None):
 #     global ext
 #     ext = extension
-#     NOTE: IMP 1:
+
+# NOTE: Should I use None on extension and then check if its None to give error, or leave it simply empty?
 def analyze_sensor(start_year: int, end_year: int, sensor_type: str, sensor_id: str, debug=False, extension=None):
     if extension is None:
         raise ValueError("Extension cannot be None")
@@ -55,19 +68,29 @@ def analyze_sensor(start_year: int, end_year: int, sensor_type: str, sensor_id: 
     for url in urls:
         if stop_event.is_set():
             ext.sendMessage('analyzeSensorWrapperResult', "Download process cancelled.")
-            return 0
+            return None
 
         downloaded_file_name: str | None = download_file(url=url[0], file_name=f"./sensor_data/{url[1]}", extension=extension)
         
+
         if downloaded_file_name is None:
             continue
 
-        if downloaded_file_name.endswith(".gz"):
-            extract_archive(downloaded_file_name, extension=extension)
-            downloaded_file_name = downloaded_file_name.replace(".gz", "")
+        downloaded_file_name = process_archive(downloaded_file_name, extension)
+        
+        csv_parsed_data: list[tuple[float, datetime.datetime]] = process_sensor_data(downloaded_file_name)
 
-        file_encoding: str = check_encoding_of_file(downloaded_file_name)
-        csv_parsed_data: list[tuple[float, datetime.datetime]] = open_and_parse_csv_file(downloaded_file_name, file_encoding)
+        # NOTE: Old implementation
+        #
+        # if downloaded_file_name.endswith(".gz"):
+        #     extract_archive(downloaded_file_name, extension=extension)
+        #     downloaded_file_name = downloaded_file_name.replace(".gz", "")
+
+
+        # file_encoding: str = check_encoding_of_file(downloaded_file_name)
+        # csv_parsed_data: list[tuple[float, datetime.datetime]] = open_and_parse_csv_file(downloaded_file_name, file_encoding)
+        
+
         
         average: float = calculate_average_temperature(csv_parsed_data)
         max_temperature: float = calculate_max_temperature(csv_parsed_data)
