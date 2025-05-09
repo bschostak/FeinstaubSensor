@@ -7,6 +7,8 @@ let sensorId = "4594"; //TODO: Make error message when sensorId is not set
 const notificationSound = new Audio("../assets/notification.mp3");
 notificationSound.preload = "auto";
 
+const cancelDownloadButton = document.getElementById("cancelDownloadDataButton");
+
 function setFormDataFromHtmlDocument() {
     startYear = document.getElementById("startYear").value;
     endYear = document.getElementById("endYear").value;
@@ -49,6 +51,12 @@ function playNotificationSound() {
 }
 
 document.getElementById("submitFormDataButton").addEventListener("click", function () {
+    cancelDownloadButton.classList.remove("disabled");
+    cancelDownloadButton.classList.add("pulse");
+    setTimeout(() => {
+      cancelDownloadButton.classList.remove("pulse");   
+    }, 400);
+
     cleanUserDisplay();
 
     setFormDataFromHtmlDocument();
@@ -70,6 +78,7 @@ document.getElementById("deleteDownloadedSensorDataButton").addEventListener("cl
 });
 
 document.getElementById("cancelDownloadDataButton").addEventListener("click", function () {
+    cancelDownloadButton.classList.add("disabled");
 
     PYTHON.run("stop_download_wrapper");
 });
