@@ -27,20 +27,8 @@ def download_file(url: str, file_name: str, extension=None) -> str | None:
         ext.sendMessage('analyzeSensorWrapperResult', f"Failed to download file {file_name}. Status code: {response.status_code}")
         return None
 
-# NOTE: Old implementation
-# def extract_archive(file_name: str, extension=None) -> None:
-#     global ext
-#     ext = extension
-#
-#     with gzip.open(file_name, "rb") as file:
-#         content = file.read()
-#     with open(file_name.replace(".gz", ""), "wb") as file:
-#         file.write(content)
-#     ext.sendMessage('analyzeSensorWrapperResult', f"File {file_name} extracted successfully.")
 
 def extract_archive(file_name: str, extension=None) -> str:
-    # global ext
-    
     if extension is None:
         raise ValueError("Extension cannot be None")
 

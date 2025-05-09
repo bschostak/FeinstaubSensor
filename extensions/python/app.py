@@ -9,8 +9,6 @@ from modules.data_analysis import calculate_average_temperature, calculate_max_t
 from modules.visualization import draw_interactive_graph  # noqa: F401
 
 #* Extension from Neutralino.js
-# NOTE: Delete line below, when it is not nore needed.
-# ext = None  # Will be set from main.py
 
 
 stop_event = threading.Event()
@@ -42,10 +40,6 @@ def process_sensor_data(file_name):
     file_encoding: str = check_encoding_of_file(file_name)
     return open_and_parse_csv_file(file_name, file_encoding)
 
-# NOTE: Old implementation
-# def analyze_sensor(start_year: int, end_year: int, sensor_type: str, sensor_id: str, debug=False, extension=None):
-#     global ext
-#     ext = extension
 
 # NOTE: Should I use None on extension and then check if its None to give error, or leave it simply empty?
 def analyze_sensor(start_year: int, end_year: int, sensor_type: str, sensor_id: str, debug=False, extension=None):
@@ -79,17 +73,6 @@ def analyze_sensor(start_year: int, end_year: int, sensor_type: str, sensor_id: 
         downloaded_file_name = process_archive(downloaded_file_name, extension)
         
         csv_parsed_data: list[tuple[float, datetime.datetime]] = process_sensor_data(downloaded_file_name)
-
-        # NOTE: Old implementation
-        #
-        # if downloaded_file_name.endswith(".gz"):
-        #     extract_archive(downloaded_file_name, extension=extension)
-        #     downloaded_file_name = downloaded_file_name.replace(".gz", "")
-
-
-        # file_encoding: str = check_encoding_of_file(downloaded_file_name)
-        # csv_parsed_data: list[tuple[float, datetime.datetime]] = open_and_parse_csv_file(downloaded_file_name, file_encoding)
-        
 
         
         average: float = calculate_average_temperature(csv_parsed_data)
