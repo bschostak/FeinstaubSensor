@@ -155,10 +155,14 @@ function onDisplayHtml(e) {
         userDisplay.innerHTML = "Could not display html content.";
         return;
     }
-
-    playNotificationSound();
-
+    
     userDisplay.appendChild(iframe);
+
+    cancelDownloadButton.classList.add("disabled");
+
+    setTimeout(() => {
+      playNotificationSound();
+    }, 400);
 }
 
 Neutralino.events.on("populateYearDropdowns", onPopulateYearDropdowns);
