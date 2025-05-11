@@ -6,8 +6,8 @@
 
 from NeutralinoExtension import *  # noqa: F403
 import time
-import app
-import available_years
+import sensor_app as app
+import modules.year_fetcher as year_fetcher
 
 DEBUG = True  # Print incoming event messages to the console
 
@@ -117,8 +117,8 @@ def fetch_available_years_wrapper(d) -> None:
     :param d: Unused parameter to maintain consistent wrapper function signature
     """
     
-    available_years_data = available_years.fetch_available_years()
-    ext.sendMessage("populateYearDropdowns", available_years_data)
+    fetched_years_data = year_fetcher.fetch_available_years()
+    ext.sendMessage("populateYearDropdowns", fetched_years_data)
 
 
 # Activate extension
