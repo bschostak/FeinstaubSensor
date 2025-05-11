@@ -5,12 +5,13 @@ import csv
 import datetime
 import os
 from pathlib import Path
+from typing import Optional
 
 #* Extension from Neutralino.js
 ext = None  # Will be set from main.py
 
 
-def download_file(url: str, file_name: str, extension=None) -> str | None:
+def download_file(url: str, file_name: str, extension=None) -> Optional[str]:
     global ext
     ext = extension
 
