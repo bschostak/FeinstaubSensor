@@ -179,3 +179,4 @@ extensions/python/sensor_data/*.csv.gz
 sensor_data/*
 bin/
 /temperaturanalyse.html
+pyaliases.sh
