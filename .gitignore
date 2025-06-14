@@ -180,3 +180,4 @@ sensor_data/*
 bin/
 /temperaturanalyse.html
 pyaliases.sh
+sensor.db
