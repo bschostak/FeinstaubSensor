@@ -1,8 +1,8 @@
 import plotly.graph_objects as go
 import base64
-import datetime
+from modules.data_operations import AnalyzedSensorData
 
-def draw_interactive_graph(analysed_data: list[tuple[datetime.datetime, float, float, float, float]]) -> str:
+def draw_interactive_graph(analysed_data: list[AnalyzedSensorData]) -> str:
     """
     Generate an interactive HTML graph of temperature data and return it as a base64-encoded string.
 
@@ -13,12 +13,12 @@ def draw_interactive_graph(analysed_data: list[tuple[datetime.datetime, float, f
     Returns:
         str: Base64-encoded HTML visualization of temperature data with interactive Plotly graph.
     """
-
-    dates = [data[0] for data in analysed_data]
-    avg_temps = [data[1] for data in analysed_data]
-    high_temps = [data[2] for data in analysed_data]
-    low_temps = [data[3] for data in analysed_data]
-    temp_diffs = [data[4] for data in analysed_data]
+    
+    dates = [data.timestamp for data in analysed_data]
+    avg_temps = [data.avg for data in analysed_data]
+    high_temps = [data.max for data in analysed_data]
+    low_temps = [data.min for data in analysed_data]
+    temp_diffs = [data.diff for data in analysed_data]
 
     fig = go.Figure()
     

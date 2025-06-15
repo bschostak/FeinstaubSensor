@@ -4,6 +4,8 @@ import chardet
 import csv
 import datetime
 import os
+
+from modules.data_operations import SensorData
 from pathlib import Path
 from typing import Optional
 
@@ -54,7 +56,7 @@ def check_encoding_of_file(file_name: str) -> str:
     return result["encoding"] if result["encoding"] is not None else "utf-8"
 
 
-def open_and_parse_csv_file(file_name: str, file_encoding: str) -> list[tuple[float, datetime.datetime]]:
+def open_and_parse_csv_file(file_name: str, file_encoding: str) -> list[SensorData]:
     """
     Open and parse a CSV file containing sensor data.
     
@@ -78,9 +80,13 @@ def open_and_parse_csv_file(file_name: str, file_encoding: str) -> list[tuple[fl
     extracted_data: list[tuple[float, datetime.datetime]] = []
     for row in data:
         separated = row[0].split(";")
+        sensor_id = int(separated[0])
+        location = int(separated[2])
+        lat = float(separated[3])
+        lon = float(separated[4])
         timestamp = datetime.datetime.strptime(separated[5], "%Y-%m-%dT%H:%M:%S")
         temperature = float(separated[6])
-        extracted_data.append((temperature, timestamp))
+        extracted_data.append(SensorData(sensor_id, location, lat, lon, timestamp, temperature))
 
     return extracted_data
 

@@ -1,7 +1,8 @@
 import sqlite3
 import datetime
-
-connection = sqlite3.connect("sensor.db")
+# SQLite database connection
+# check_same_thread=False allows the connection to be used across different threads
+connection = sqlite3.connect("sensor_data.db", check_same_thread=False)
 
 class SensorData:
     def __init__(self, sensor_id: int, location: int, lat: float, lon: float, timestamp: datetime.datetime, temperature: float):
@@ -20,7 +21,9 @@ class AnalyzedSensorData:
         self.max = max
         self.min = min
         self.diff = diff
-        
+    
+    def __str__(self):
+        return f"(sensor_id={self.sensor_id}, timestamp={self.timestamp}, avg={self.avg}, max={self.max}, min={self.min}, diff={self.diff})"
         
 
 def create_table():
@@ -37,6 +40,7 @@ def create_table():
     connection.commit()
 
 def insert_data(data: list[SensorData]):
+    print(f"Inserting {len(data)} rows into sensor_data table.")
     rows = []
     for d in data:
         row = (d.sensor_id, d.location, d.lat, d.lon, d.timestamp, d.temperature)
@@ -50,7 +54,7 @@ def exists_sensor_data_in_year(sensor_id: int, year: int) -> bool:
                                          SELECT sensor_id
                                          FROM sensor_data
                                          WHERE sensor_id = ?
-                                           AND CAST(strftime('%Y', date) AS INT) = ?
+                                           AND CAST(strftime('%Y', timestamp) AS INT) = ?
                                          ''', (sensor_id, year)).fetchall()
 
     return len(query_result) > 0
@@ -61,14 +65,14 @@ def load_sensor_data(sensor_id: int, from_year: int, to_year: int) -> list[Analy
                                                 MAX(temperature),
                                                 MIN(temperature),
                                                 (MAX(temperature) - MIN(temperature)),
-                                                DATE(date)
+                                                DATE(timestamp)
                                          FROM sensor_data
                                          WHERE sensor_id = ?
-                                           AND CAST(strftime('%Y', date) AS INT) BETWEEN ? AND ?
-                                         GROUP BY DATE(date)
-                                         ORDER BY DATE(date)
+                                           AND CAST(strftime('%Y', timestamp) AS INT) BETWEEN ? AND ?
+                                         GROUP BY DATE(timestamp)
+                                         ORDER BY DATE(timestamp)
                                          ''', (sensor_id, from_year, to_year)).fetchall()
-
+    
     result_data: list[AnalyzedSensorData] = []
 
     for row in query_result:
@@ -81,10 +85,3 @@ def load_sensor_data(sensor_id: int, from_year: int, to_year: int) -> list[Analy
     return result_data
 
 create_table()
-
-# sensor_id
-# location
-# lat
-# lon
-# timestamp
-# temperature

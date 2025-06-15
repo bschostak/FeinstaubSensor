@@ -1,13 +1,15 @@
 from NeutralinoExtension import *  # noqa: F403
-import datetime
 import threading
+import modules.data_operations as data_operations
+from modules.data_operations import SensorData
+
 from pathlib import Path
 from typing import Optional
+from modules.data_operations import AnalyzedSensorData
 
 from modules.url_generator import generate_urls
 from modules.file_operations import download_file, extract_archive, check_encoding_of_file, open_and_parse_csv_file, delete_sensor_data_files  # noqa: F401
 from modules.data_analysis import calculate_average_temperature, calculate_max_temperature, calculate_min_temperature, calculate_temperature_difference
-from modules.visualization import draw_interactive_graph  # noqa: F401
 
 #* Extension from Neutralino.js
 SENSOR_DATA_DIR = Path("./sensor_data")
@@ -38,7 +40,7 @@ def process_archive(file_name: str, extension=None) -> str:
     return file_name
 
 
-def process_sensor_data(file_name) -> list[tuple[float, datetime.datetime]]:
+def process_sensor_data(file_name) -> list[SensorData]:
     file_encoding: str = check_encoding_of_file(file_name)
     return open_and_parse_csv_file(file_name, file_encoding)
 
@@ -70,32 +72,47 @@ def download_sensor_data(urls: list[tuple[str, str]], extension=None) -> Optiona
 
 def analyze_sensor(start_year: int, end_year: int, sensor_type: str, sensor_id: str, 
                    debug=False, extension=None
-                   ) -> Optional[list[tuple[datetime.datetime, float, float, float, float]]]:
+                   ) -> Optional[list[AnalyzedSensorData]]:
 
     if extension is None:
         raise ValueError("Extension cannot be None")
 
 
     SENSOR_DATA_DIR.mkdir(parents=True, exist_ok=True)
-        
-    urls: list[tuple[str, str]] = generate_urls(start_year, end_year, sensor_type, sensor_id)
+    
+    analysed_data: list[AnalyzedSensorData] = []
+    
+    modified_start_year = start_year
+    
+    for year in range(start_year, end_year + 1):
+        if not data_operations.exists_sensor_data_in_year(sensor_id, year):
+            continue
+        extension.sendMessage("analyzeSensorWrapperResult", f"Data for sensor {sensor_id} in year {year} already exists in the database.")
+        modified_start_year += 1
+        analysed_data.extend(data_operations.load_sensor_data(sensor_id, year, year))
+        if year == end_year:
+            extension.sendMessage("analyzeSensorWrapperResult", f"Data for sensor {sensor_id} already exists for the year {start_year} to {end_year}.")
+            return analysed_data
+            
+    
+    urls: list[tuple[str, str]] = generate_urls(modified_start_year, end_year, sensor_type, sensor_id)
 
     downloaded_files: list[str] | None = download_sensor_data(urls, extension)
 
     if not downloaded_files:
         return None
-
-    analysed_data: list[tuple[datetime.datetime, float, float, float, float]] = []
-
+    
+    total_parsed_data: list[SensorData] = []
+    
     for file_name in downloaded_files:
-        csv_parsed_data = process_sensor_data(file_name)
+        csv_parsed_data: list[SensorData] = process_sensor_data(file_name)
+        total_parsed_data.extend(csv_parsed_data)
         
-        measurement_date = csv_parsed_data[0][1]
+        measurement_date = csv_parsed_data[0].timestamp
         average = calculate_average_temperature(csv_parsed_data)
         max_temperature = calculate_max_temperature(csv_parsed_data)
         min_temperature = calculate_min_temperature(csv_parsed_data)
         temperature_diff = calculate_temperature_difference(csv_parsed_data)
-
-        analysed_data.append((measurement_date, average, max_temperature, min_temperature, temperature_diff))
-
+        analysed_data.append(AnalyzedSensorData(sensor_id, measurement_date, average, max_temperature, min_temperature, temperature_diff))
+    data_operations.insert_data(total_parsed_data)
     return analysed_data
