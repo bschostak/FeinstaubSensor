@@ -1,0 +1,169 @@
+@startuml FeinstaubSensor_Sequence
+
+actor User
+participant "Frontend" as Frontend
+participant "NeutralinoExtension" as Ext
+participant "main.py" as Main
+participant "sensor_app.py" as App
+participant "data_operations" as DataOps
+participant "url_generator" as UrlGen
+participant "date_utils" as DateUtils
+participant "file_operations" as FileOps
+participant "data_analysis" as Analysis
+participant "visualization" as Viz
+participant "year_fetcher" as YearFetch
+database "SQLite DB" as DB
+participant "External APIs" as APIs
+
+== Initialization ==
+User -> Frontend: Start Application
+Frontend -> Ext: Initialize connection
+Ext -> Main: processAppEvent()
+Main -> Main: ext = NeutralinoExtension(DEBUG)
+
+== Fetch Available Years ==
+User -> Frontend: Request available years
+Frontend -> Ext: runPython("fetch_available_years_wrapper")
+Ext -> Main: fetch_available_years_wrapper()
+Main -> YearFetch: fetch_available_years()
+YearFetch -> APIs: GET https://archive.sensor.community
+APIs --> YearFetch: HTML response
+YearFetch -> YearFetch: parse HTML with BeautifulSoup
+YearFetch --> Main: JSON list of years
+Main -> Ext: sendMessage("populateYearDropdowns", years)
+Ext --> Frontend: Populate year dropdowns
+Frontend --> User: Display available years
+
+== Sensor Data Analysis ==
+User -> Frontend: Submit analysis request\n(start_year, end_year, sensor_type, sensor_id)
+Frontend -> Ext: runPython("analyze_sensor_wrapper", params)
+Ext -> Main: analyze_sensor_wrapper(params)
+Main -> App: analyze_sensor(start_year, end_year, sensor_type, sensor_id, extension=ext)
+
+=== Check Existing Data ===
+App -> App: Create SENSOR_DATA_DIR
+loop For each year in range
+    App -> DataOps: exists_sensor_data_in_year(sensor_id, year)
+    DataOps -> DB: SELECT query
+    DB --> DataOps: Query result
+    DataOps --> App: boolean exists
+    
+    alt Data exists
+        App -> DataOps: load_sensor_data(sensor_id, year, year)
+        DataOps -> DB: SELECT with aggregation
+        DB --> DataOps: Aggregated data
+        DataOps --> App: list[AnalyzedSensorData]
+        App -> Ext: sendMessage("analyzeSensorWrapperResult", "Data exists message")
+        Ext --> Frontend: Display message
+    else Data doesn't exist
+        App -> App: Continue to download
+    end
+end
+
+=== URL Generation ===
+App -> UrlGen: generate_urls(modified_start_year, end_year, sensor_type, sensor_id)
+loop For each year
+    UrlGen -> DateUtils: get_date_range_year(year)
+    DateUtils --> UrlGen: list[datetime]
+    loop For each date
+        UrlGen -> UrlGen: parse_url(date, sensor_type, sensor_id)
+        UrlGen -> UrlGen: parse_file_name(date, sensor_type, sensor_id)
+    end
+end
+UrlGen --> App: list[tuple[url, filename]]
+
+=== File Download & Processing ===
+App -> App: download_sensor_data(urls, extension)
+App -> App: stop_event.clear()
+
+loop For each URL
+    alt stop_event is set
+        App -> Ext: sendMessage("analyzeSensorWrapperResult", "Cancelled")
+        Ext --> Frontend: Display cancellation
+        App --> Main: Return None
+    else Continue download
+        App -> FileOps: download_file(url, filename, extension)
+        
+        alt File exists
+            FileOps -> Ext: sendMessage("File exists")
+            Ext --> Frontend: Display message
+        else Download needed
+            FileOps -> APIs: GET request to sensor.community
+            APIs --> FileOps: File content
+            FileOps -> FileOps: Save file to disk
+            FileOps -> Ext: sendMessage("Download successful")
+            Ext --> Frontend: Display progress
+        end
+        
+        alt File is .gz
+            App -> FileOps: extract_archive(filename, extension)
+            FileOps -> FileOps: gzip.open() and extract
+            FileOps -> Ext: sendMessage("Extraction successful")
+            Ext --> Frontend: Display message
+            FileOps --> App: extracted_filename
+        end
+    end
+end
+
+=== Data Processing ===
+loop For each downloaded file
+    App -> FileOps: check_encoding_of_file(filename)
+    FileOps -> FileOps: chardet.detect()
+    FileOps --> App: encoding
+    
+    App -> FileOps: open_and_parse_csv_file(filename, encoding)
+    FileOps -> FileOps: Parse CSV with semicolon delimiter
+    FileOps --> App: list[SensorData]
+    
+    App -> Analysis: calculate_average_temperature(csv_data)
+    Analysis --> App: average
+    App -> Analysis: calculate_max_temperature(csv_data)
+    Analysis --> App: max_temp
+    App -> Analysis: calculate_min_temperature(csv_data)
+    Analysis --> App: min_temp
+    App -> Analysis: calculate_temperature_difference(csv_data)
+    Analysis --> App: temp_diff
+    
+    App -> App: Create AnalyzedSensorData object
+end
+
+App -> DataOps: insert_data(total_parsed_data)
+DataOps -> DB: INSERT OR IGNORE bulk operation
+DB --> DataOps: Confirmation
+DataOps --> App: Success
+
+App --> Main: list[AnalyzedSensorData]
+
+=== Visualization ===
+Main -> Viz: draw_interactive_graph(analyzed_data)
+Viz -> Viz: Create Plotly figure with traces:\n- Average, Max, Min, Diff lines
+Viz -> Viz: fig.write_html("temperaturanalyse.html")
+Viz -> Viz: Read HTML file
+Viz -> Viz: base64.b64encode(html_content)
+Viz --> Main: base64_encoded_html
+
+Main -> Ext: sendMessage("displaySensorHtml", base64_html)
+Ext --> Frontend: Display interactive graph
+Frontend --> User: Show temperature analysis
+
+== Alternative Flows ==
+
+=== Stop Download ===
+User -> Frontend: Click stop button
+Frontend -> Ext: runPython("stop_download_wrapper")
+Ext -> Main: stop_download_wrapper()
+Main -> App: stop_download()
+App -> App: stop_event.set()
+note right: This will be checked in download loop
+
+=== Delete Files ===
+User -> Frontend: Request file deletion
+Frontend -> Ext: runPython("delete_sensor_data_files_wrapper")
+Ext -> Main: delete_sensor_data_files_wrapper()
+Main -> FileOps: delete_sensor_data_files(extension=ext)
+FileOps -> FileOps: Remove .csv and .gz files
+FileOps -> Ext: sendMessage("Deleted X files")
+Ext --> Frontend: Display deletion count
+Frontend --> User: Show confirmation
+
+@enduml

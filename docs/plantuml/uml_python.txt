@@ -1,0 +1,166 @@
+@startuml FeinstaubSensor
+
+!define LIGHTYELLOW #FFFACD
+!define LIGHTBLUE #E6F3FF
+!define LIGHTGREEN #E6FFE6
+!define LIGHTPINK #FFE6F0
+
+package "Main Application" LIGHTYELLOW {
+    class main {
+        +DEBUG: bool
+        +ext: NeutralinoExtension
+        +taskLongRun(d): void
+        +ping(d): void
+        +processAppEvent(d): void
+        +analyze_sensor_wrapper(d): void
+        +delete_sensor_data_files_wrapper(d): void
+        +stop_download_wrapper(d): void
+        +fetch_available_years_wrapper(d): void
+    }
+
+    class sensor_app {
+        +SENSOR_DATA_DIR: Path
+        +stop_event: threading.Event
+        +stop_download(): void
+        +process_archive(file_name: str, extension): str
+        +process_sensor_data(file_name): list[SensorData]
+        +download_sensor_data(urls: list[tuple], extension): Optional[list[str]]
+        +analyze_sensor(start_year: int, end_year: int, sensor_type: str, sensor_id: str, debug: bool, extension): Optional[list[AnalyzedSensorData]]
+    }
+}
+
+package "Data Models" LIGHTBLUE {
+    class SensorData {
+        +sensor_id: int
+        +location: int
+        +lat: float
+        +lon: float
+        +timestamp: datetime
+        +temperature: float
+        +__init__(sensor_id, location, lat, lon, timestamp, temperature)
+    }
+
+    class AnalyzedSensorData {
+        +sensor_id: int
+        +timestamp: datetime
+        +avg: float
+        +max: float
+        +min: float
+        +diff: float
+        +__init__(sensor_id, timestamp, avg, max, min, diff)
+        +__str__(): str
+    }
+}
+
+package "Data Operations" LIGHTGREEN {
+    class data_operations {
+        +connection: sqlite3.Connection
+        +create_table(): void
+        +insert_data(data: list[SensorData]): void
+        +exists_sensor_data_in_year(sensor_id: int, year: int): bool
+        +load_sensor_data(sensor_id: int, from_year: int, to_year: int): list[AnalyzedSensorData]
+    }
+}
+
+package "File Operations" LIGHTPINK {
+    class file_operations {
+        +ext: NeutralinoExtension
+        +download_file(url: str, file_name: str, extension): Optional[str]
+        +extract_archive(file_name: str, extension): str
+        +check_encoding_of_file(file_name: str): str
+        +open_and_parse_csv_file(file_name: str, file_encoding: str): list[SensorData]
+        +delete_sensor_data_files(debug, extension): void
+    }
+}
+
+package "URL Generation" LIGHTYELLOW {
+    class url_generator {
+        +base_url: str
+        +parse_file_name(date: datetime, sensor_type: str, sensor_id: str): str
+        +parse_url(date: datetime, sensor_type: str, sensor_id: str): str
+        +generate_urls(start_year: int, end_year: int, sensor_type: str, sensor_id: str): list[tuple[str, str]]
+        +generate_single_sensor_url(start_year: int, end_year: int, sensor_type: str, sensor_id: str): str {deprecated}
+    }
+}
+
+package "Date Utilities" LIGHTBLUE {
+    class date_utils {
+        +get_date_range_year(year: int): list[datetime]
+        +get_date_range(from_time: datetime, to_time: datetime): list[datetime]
+    }
+}
+
+package "Data Analysis" LIGHTGREEN {
+    class data_analysis {
+        +calculate_average_temperature(data: list[SensorData]): float
+        +calculate_max_temperature(data: list[SensorData]): float
+        +calculate_min_temperature(data: list[SensorData]): float
+        +calculate_temperature_difference(data: list[SensorData]): float
+    }
+}
+
+package "Visualization" LIGHTPINK {
+    class visualization {
+        +draw_interactive_graph(analysed_data: list[AnalyzedSensorData]): str
+    }
+}
+
+package "Year Fetcher" LIGHTYELLOW {
+    class year_fetcher {
+        +get_available_years(): list[str]
+        +fetch_available_years(parameter): str
+    }
+}
+
+package "External Dependencies" {
+    class NeutralinoExtension {
+        +sendMessage(event: str, data): void
+        +runThread(func, name: str, data): void
+        +isEvent(d, event: str): bool
+        +parseFunctionCall(d): tuple
+    }
+}
+
+' Relationships
+main --> sensor_app : uses
+main --> year_fetcher : uses
+main --> visualization : uses
+main --> NeutralinoExtension : extends
+
+sensor_app --> data_operations : uses
+sensor_app --> url_generator : uses
+sensor_app --> file_operations : uses
+sensor_app --> data_analysis : uses
+sensor_app --> SensorData : creates
+sensor_app --> AnalyzedSensorData : creates
+
+file_operations --> SensorData : creates
+file_operations --> NeutralinoExtension : uses
+
+data_operations --> SensorData : manages
+data_operations --> AnalyzedSensorData : creates
+
+data_analysis --> SensorData : analyzes
+
+visualization --> AnalyzedSensorData : visualizes
+
+url_generator --> date_utils : uses
+
+year_fetcher ..> "requests\nBeautifulSoup" : uses
+
+file_operations ..> "requests\ngzip\nchardet\ncsv" : uses
+
+visualization ..> "plotly\nbase64" : uses
+
+data_operations ..> "sqlite3" : uses
+
+' Notes
+note right of sensor_app : Main application logic\nHandles sensor data processing\nCoordinates between modules
+
+note right of data_operations : Database operations\nSQLite connection management\nData persistence
+
+note right of file_operations : File download and processing\nCSV parsing\nArchive extraction
+
+note right of visualization : Interactive graph generation\nPlotly integration\nBase64 encoding
+
+@enduml

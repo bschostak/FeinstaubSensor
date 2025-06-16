@@ -1,0 +1,138 @@
+@startuml FeinstaubSensor_Flowchart
+
+!define PROCESS #E1F5FE
+!define DECISION #FFF3E0
+!define DATA #E8F5E8
+!define EXTERNAL #FCE4EC
+
+start
+
+:User initiates sensor analysis request;
+
+:main.py receives "analyze_sensor_wrapper" event;
+
+:Extract parameters:\n- start_year\n- end_year\n- sensor_type\n- sensor_id;
+
+:Call sensor_app.analyze_sensor();
+
+:Create SENSOR_DATA_DIR if not exists;
+
+partition "Check Existing Data" {
+    :Loop through years (start_year to end_year);
+    
+    if (Data exists in database for this year?) then (yes)
+        :Load existing data from database;
+        :Add to analyzed_data list;
+        :Increment modified_start_year;
+    else (no)
+        :Continue to download process;
+    endif
+}
+
+if (All years already processed?) then (yes)
+    :Return existing analyzed_data;
+    stop
+else (no)
+    :Continue with download;
+endif
+
+partition "URL Generation" {
+    :Call url_generator.generate_urls();
+    :Loop through years (modified_start_year to end_year);
+    :Call date_utils.get_date_range_year() for each year;
+    :Generate URL and filename for each date;
+    :Return list of (url, filename) tuples;
+}
+
+partition "File Download & Processing" {
+    :Initialize downloaded_files list;
+    :Clear stop_event;
+    
+    repeat
+        :Get next URL from urls list;
+        
+        if (stop_event is set?) then (yes)
+            :Send cancellation message;
+            stop
+        else (no)
+            :Continue;
+        endif
+        
+        if (File already exists?) then (yes)
+            :Send "file exists" message;
+            :Add to downloaded_files;
+        else (no)
+            :Download file using requests;
+            if (Download successful?) then (yes)
+                :Send success message;
+                :Add to downloaded_files;
+            else (no)
+                :Send error message;
+            endif
+        endif
+        
+        if (File is .gz archive?) then (yes)
+            :Extract using gzip;
+            :Update filename;
+        else (no)
+            :Keep original filename;
+        endif
+        
+    repeat while (More URLs to process?)
+}
+
+if (No files downloaded?) then (yes)
+    :Return None;
+    stop
+else (no)
+    :Continue processing;
+endif
+
+partition "Data Processing & Analysis" {
+    :Initialize total_parsed_data list;
+    :Initialize analysed_data list;
+    
+    repeat
+        :Get next downloaded file;
+        
+        :Check file encoding using chardet;
+        :Parse CSV file with detected encoding;
+        :Extract sensor data (sensor_id, location, lat, lon, timestamp, temperature);
+        :Create SensorData objects;
+        :Add to total_parsed_data;
+        
+        :Calculate statistics using data_analysis:;
+        :- calculate_average_temperature();
+        :- calculate_max_temperature();
+        :- calculate_min_temperature();
+        :- calculate_temperature_difference();
+        
+        :Create AnalyzedSensorData object;
+        :Add to analysed_data list;
+        
+    repeat while (More files to process?)
+    
+    :Insert total_parsed_data into database;
+}
+
+:Return analysed_data to main.py;
+
+partition "Visualization" {
+    :Call visualization.draw_interactive_graph();
+    :Create Plotly figure with:;
+    :- Average temperature line;
+    :- Maximum temperature line;
+    :- Minimum temperature line;
+    :- Temperature difference line;
+    
+    :Generate HTML file;
+    :Read HTML content;
+    :Encode to base64;
+    :Return base64 string;
+}
+
+:Send base64 HTML to frontend via "displaySensorHtml";
+
+stop
+
+@enduml
