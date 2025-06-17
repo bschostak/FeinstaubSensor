@@ -27,6 +27,7 @@ This is illustrated with a graphical diagram.
 - chardet
 - websocket-client
 - websockets
+- SQLite3
 
 
 ## Requirements:
@@ -39,6 +40,7 @@ This is illustrated with a graphical diagram.
 - websockets
 - requests
 - beautifulsoup4
+- sqlite3
 
 
 ## Usage:
