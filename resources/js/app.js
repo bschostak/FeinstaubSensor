@@ -8,6 +8,8 @@ const notificationSound = new Audio("../assets/notification.mp3");
 notificationSound.preload = "auto";
 
 const cancelDownloadButton = document.getElementById("cancelDownloadDataButton");
+const displayContainer = document.getElementById("userDisplay");
+let shouldAutoScroll = true;
 
 function setFormDataFromHtmlDocument() {
     startYear = document.getElementById("startYear").value;
@@ -83,6 +85,10 @@ document.getElementById("cancelDownloadDataButton").addEventListener("click", fu
     PYTHON.run("stop_download_wrapper");
 });
 
+displayContainer.addEventListener("scroll", () => {
+    shouldAutoScroll = displayContainer.scrollTop + displayContainer.clientHeight >= displayContainer.scrollHeight - 10;
+});
+
 function onPopulateYearDropdowns(e) {
     const startYearSelect = document.getElementById('startYear');
     const endYearSelect = document.getElementById('endYear');
@@ -124,6 +130,10 @@ function onPopulateYearDropdowns(e) {
 function onAnalyzeSensorWrapperResult(e) {
     let userDisplay = document.getElementById("userDisplay");
     userDisplay.innerHTML += e.detail + '<br>';
+    
+    if (shouldAutoScroll) {
+        displayContainer.scrollTop = displayContainer.scrollHeight;
+    }
 }
 
 function isBase64(str) {
