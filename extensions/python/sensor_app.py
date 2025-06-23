@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Optional
 from modules.data_operations import AnalyzedSensorData
 from modules.data_operations import AnalyzedSensor
+from modules.data_operations import delete_all_sensor_data
 
 from modules.url_generator import generate_urls
 from modules.file_operations import download_file, extract_archive, check_encoding_of_file, open_and_parse_csv_file, delete_sensor_data_files  # noqa: F401
@@ -125,4 +126,5 @@ def analyze_sensor(start_year: int, end_year: int, sensor_type: str, sensor_id: 
         analysed_data.temperature_data.append(AnalyzedSensorData(sensor_id, measurement_date, average_temperature, max_temperature, min_temperature, temperature_diff))
         analysed_data.humidity_data.append(AnalyzedSensorData(sensor_id, measurement_date, average_humidity, max_humidity, min_humidity, humidity_diff))    
     data_operations.insert_data(total_parsed_data)
+    delete_sensor_data_files()
     return analysed_data

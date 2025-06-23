@@ -103,4 +103,8 @@ def load_sensor_data(sensor_id: int, from_year: int, to_year: int) -> AnalyzedSe
         temperature_result_data.append(AnalyzedSensorData(sensor_id, sensor_date, average_temperature, max_temperature, min_temperature, temperature_diff))
     return AnalyzedSensor(sensor_id=sensor_id, temperature_data=temperature_result_data, humidity_data=humidity_result_data)
 
+def delete_all_sensor_data():
+    connection.execute('DELETE FROM sensor_data')
+    connection.commit()
+
 create_table()

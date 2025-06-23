@@ -92,8 +92,9 @@ def delete_sensor_data_files_wrapper(d) -> None:
     
     :param d: Unused parameter to maintain consistent wrapper function signature
     """
+    app.delete_all_sensor_data()
+    ext.sendMessage('analyzeSensorWrapperResult', "Deleted all sensor data.")
     
-    app.delete_sensor_data_files(extension=ext)
 
 
 def stop_download_wrapper(d) -> None:

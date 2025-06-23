@@ -110,25 +110,14 @@ def is_valid_float(value: str) -> Optional[float]:
     except ValueError:
         return None
 
-def delete_sensor_data_files(debug=None, extension=None) -> None:
-    global ext
-    ext = extension
-    
+def delete_sensor_data_files():
     data_dir = Path("./sensor_data")
     
     if not data_dir.exists():
         data_dir.mkdir(parents=True)
-        ext.sendMessage('analyzeSensorWrapperResult', "Created sensor_data directory.")
         return
-
-    deleted_files_count: int = 0
     
     for file_path in data_dir.glob("*"):
         if file_path.suffix in ['.csv', '.gz'] or file_path.name.endswith('.csv.gz'):
-            try:
-                os.remove(file_path)
-                deleted_files_count += 1
-            except Exception as e:
-                ext.sendMessage('analyzeSensorWrapperResult', f"Error deleting {file_path}: {str(e)}")
+            os.remove(file_path)
     
-    ext.sendMessage('analyzeSensorWrapperResult', f"Deleted {deleted_files_count} sensor data files.")
