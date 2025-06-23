@@ -4,4 +4,4 @@ VENV_PATH="${DATA_PATH}/.venv"
 source "${VENV_PATH}/bin/activate"
 export WEBKIT_DISABLE_DMABUF_RENDERER=1
 cd "${DATA_PATH}" || exit
-./ext-python-linux_x64
+./feinstaubsensor-linux_x64
