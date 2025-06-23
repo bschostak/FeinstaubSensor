@@ -9,7 +9,7 @@ import time
 import sensor_app as app
 import modules.year_fetcher as year_fetcher
 from typing import Optional
-from modules.data_operations import AnalyzedSensorData
+from modules.data_operations import AnalyzedSensor
 import modules.visualization as visualization
 
 DEBUG = True  # Print incoming event messages to the console
@@ -74,7 +74,7 @@ def analyze_sensor_wrapper(d) -> None:
     :param d: List containing sensor data parameters [param1, param2, param3, param4]
     """
 
-    analyzed_sensor_data: Optional[list[AnalyzedSensorData]] = app.analyze_sensor(int(d[0]), int(d[1]), d[2], d[3], extension=ext)
+    analyzed_sensor_data: Optional[AnalyzedSensor] = app.analyze_sensor(int(d[0]), int(d[1]), d[2], d[3], extension=ext)
 
     if analyzed_sensor_data is None:
         return

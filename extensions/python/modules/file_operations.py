@@ -80,16 +80,35 @@ def open_and_parse_csv_file(file_name: str, file_encoding: str) -> list[SensorDa
     extracted_data: list[tuple[float, datetime.datetime]] = []
     for row in data:
         separated = row[0].split(";")
+        
+        if not is_valid_float(separated[6]) or not is_valid_float(separated[7]):
+            continue
+        
         sensor_id = int(separated[0])
         location = int(separated[2])
         lat = float(separated[3])
         lon = float(separated[4])
         timestamp = datetime.datetime.strptime(separated[5], "%Y-%m-%dT%H:%M:%S")
         temperature = float(separated[6])
-        extracted_data.append(SensorData(sensor_id, location, lat, lon, timestamp, temperature))
+        humidity = float(separated[7])
+        extracted_data.append(SensorData(sensor_id, location, lat, lon, timestamp, temperature, humidity))
 
     return extracted_data
 
+def is_valid_float(value: str) -> Optional[float]:
+    """
+    Convert a string to a float, returning None if conversion fails.
+    
+    Args:
+        value (str): The string to convert.
+    
+    Returns:
+        Optional[float]: The converted float or None if conversion fails.
+    """
+    try:
+        return float(value)
+    except ValueError:
+        return None
 
 def delete_sensor_data_files(debug=None, extension=None) -> None:
     global ext
