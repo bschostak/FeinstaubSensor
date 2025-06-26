@@ -82,8 +82,8 @@ class TestProcessSensorData(TestSensorApp):
         # Setup mocks
         mock_check_encoding.return_value = "utf-8"
         mock_sensor_data = [
-            SensorData("123", datetime.now(), 25.5, 60.0),
-            SensorData("123", datetime.now(), 26.0, 65.0)
+            SensorData(123, 56, 25, 60, datetime.now(), 25.5, 60.0),
+            SensorData(123, 56, 25, 60, datetime.now(), 26.5, 60.0)
         ]
         mock_parse_csv.return_value = mock_sensor_data
         
@@ -221,8 +221,8 @@ class TestAnalyzeSensor(TestSensorApp):
         
         test_timestamp = datetime(2023, 1, 1)
         mock_sensor_data = [
-            SensorData("123", test_timestamp, 25.5, 60.0),
-            SensorData("123", test_timestamp, 26.0, 65.0)
+            SensorData(123, 56, 25, 60, datetime.now(), 25.5, 60.0),
+            SensorData(123, 56, 25, 60, datetime.now(), 26.5, 60.0)
         ]
         mock_process_data.return_value = mock_sensor_data
         
@@ -298,7 +298,7 @@ class TestAnalyzeSensor(TestSensorApp):
         mock_download.return_value = ["2024_file.csv"]
         
         test_timestamp_2024 = datetime(2024, 1, 1)
-        mock_sensor_data_2024 = [SensorData("123", test_timestamp_2024, 30.0, 70.0)]
+        mock_sensor_data_2024 = [SensorData(123, 56, 25, 60, test_timestamp_2024, 30.0, 70.0)]
         mock_process_data.return_value = mock_sensor_data_2024
 
 if __name__ == '__main__':
@@ -309,9 +309,9 @@ if __name__ == '__main__':
     test_suite.addTest(unittest.TestLoader().loadTestsFromTestCase(TestSensorApp))
     test_suite.addTest(unittest.TestLoader().loadTestsFromTestCase(TestStopDownload))
     test_suite.addTest(unittest.TestLoader().loadTestsFromTestCase(TestProcessArchive))
-    # test_suite.addTest(unittest.TestLoader().loadTestsFromTestCase(TestProcessSensorData))
+    test_suite.addTest(unittest.TestLoader().loadTestsFromTestCase(TestProcessSensorData))
     # test_suite.addTest(unittest.TestLoader().loadTestsFromTestCase(TestDownloadSensorData))
-    # test_suite.addTest(unittest.TestLoader().loadTestsFromTestCase(TestAnalyzeSensor))
+    test_suite.addTest(unittest.TestLoader().loadTestsFromTestCase(TestAnalyzeSensor))
     
     # Run the tests
     runner = unittest.TextTestRunner(verbosity=2)
